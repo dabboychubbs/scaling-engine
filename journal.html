@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Daily Journal</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --surface2: #22222e;
+      --border: #2e2e3e;
+      --accent: #7c6af7;
+      --accent-dim: #4a3fa0;
+      --text: #e8e8f0;
+      --text-muted: #888898;
+      --success: #4caf84;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ── */
+    #app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      padding: 24px 20px 32px;
+      max-width: 520px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .screen.active { display: flex; }
+
+    /* ── Home ── */
+    .home-header {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      padding-bottom: 16px;
+    }
+
+    .home-date {
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .home-title {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    .home-title span {
+      color: var(--accent);
+    }
+
+    .home-subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .home-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 24px;
+      border-radius: var(--radius);
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { opacity: 0.85; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 14px;
+      padding: 12px 16px;
+    }
+    .btn-ghost:hover { color: var(--text); }
+
+    .btn-copy {
+      background: var(--surface2);
+      color: var(--accent);
+      border: 1px solid var(--accent-dim);
+      font-size: 14px;
+      padding: 12px 20px;
+    }
+    .btn-copy.copied {
+      background: #1e3328;
+      color: var(--success);
+      border-color: #2e5040;
+    }
+
+    /* ── Prompt screen ── */
+    .prompt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 22px;
+      cursor: pointer;
+      padding: 4px 8px 4px 0;
+      -webkit-tap-highlight-color: transparent;
+      line-height: 1;
+    }
+    .back-btn:hover { color: var(--text); }
+
+    .progress-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .progress-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+    .dot.active { background: var(--accent); }
+    .dot.done { background: var(--accent-dim); }
+
+    .prompt-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .prompt-question {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
+
+    textarea {
+      flex: 1;
+      width: 100%;
+      min-height: 180px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 17px;
+      line-height: 1.65;
+      padding: 16px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+      margin-bottom: 20px;
+    }
+    textarea:focus { border-color: var(--accent); }
+    textarea::placeholder { color: var(--text-muted); }
+
+    /* ── Summary screen ── */
+    .summary-header {
+      margin-bottom: 24px;
+    }
+
+    .summary-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .summary-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .summary-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .summary-actions .btn { flex: 1; min-width: 140px; }
+
+    .entry-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 12px;
+      overflow-y: auto;
+      max-height: 55vh;
+    }
+
+    .entry-section {
+      margin-bottom: 18px;
+    }
+    .entry-section:last-child { margin-bottom: 0; }
+
+    .entry-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .entry-section-body {
+      font-size: 15px;
+      color: var(--text);
+      white-space: pre-wrap;
+      line-height: 1.65;
+    }
+
+    /* ── Log screen ── */
+    .log-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .log-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .log-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .log-empty-icon { font-size: 40px; opacity: 0.4; }
+    .log-empty-text { font-size: 15px; }
+
+    .log-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .log-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .log-item:hover { border-color: var(--accent-dim); }
+
+    .log-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      gap: 12px;
+    }
+
+    .log-item-date {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .log-item-time {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .log-chevron {
+      color: var(--text-muted);
+      font-size: 18px;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .log-item.open .log-chevron { transform: rotate(180deg); }
+
+    .log-item-body {
+      display: none;
+      padding: 0 18px 18px;
+      border-top: 1px solid var(--border);
+    }
+    .log-item.open .log-item-body { display: block; }
+
+    .log-item-body .entry-section { margin-top: 16px; }
+
+    .log-item-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: #e06060;
+      border: 1px solid #4a2020;
+      font-size: 13px;
+      padding: 9px 14px;
+      flex: 1;
+    }
+    .btn-danger:hover { background: #2a1212; }
+
+    /* ── Saved toast ── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--success);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 40px;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 100;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Responsive tweaks ── */
+    @media (min-height: 700px) {
+      .prompt-question { font-size: 27px; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME SCREEN -->
+  <div id="screen-home" class="screen active">
+    <div class="home-header">
+      <div class="home-date" id="home-date"></div>
+      <div class="home-title">Daily<span>.</span></div>
+      <div class="home-subtitle">A moment to reflect.</div>
+    </div>
+    <div class="home-actions">
+      <button class="btn btn-primary" onclick="startJournal()">&#x270F;&#xFE0F; New Entry</button>
+      <button class="btn btn-secondary" onclick="showLog()">&#x1F4D6; Past Entries</button>
+    </div>
+  </div>
+
+  <!-- PROMPT SCREEN -->
+  <div id="screen-prompt" class="screen">
+    <div class="prompt-header">
+      <button class="back-btn" onclick="goBack()" aria-label="Back">&#8592;</button>
+      <div class="progress-wrap">
+        <div class="progress-label" id="progress-label"></div>
+        <div class="progress-dots" id="progress-dots"></div>
+      </div>
+    </div>
+    <div class="prompt-label" id="prompt-label"></div>
+    <div class="prompt-question" id="prompt-question"></div>
+    <textarea id="prompt-input" placeholder="Type here…" rows="6"></textarea>
+    <button class="btn btn-primary" id="next-btn" onclick="nextPrompt()">Next</button>
+  </div>
+
+  <!-- SUMMARY SCREEN -->
+  <div id="screen-summary" class="screen">
+    <div class="summary-header">
+      <div class="summary-title">Entry complete</div>
+      <div class="summary-meta" id="summary-meta"></div>
+    </div>
+    <div class="summary-actions">
+      <button class="btn btn-copy" id="copy-btn" onclick="copyEntry()">&#x2398; Copy</button>
+      <button class="btn btn-secondary" onclick="showLog()">&#x1F4D6; View Log</button>
+      <button class="btn btn-ghost" onclick="showScreen('screen-home')">&#x2190; Home</button>
+    </div>
+    <div class="entry-card" id="summary-entry"></div>
+  </div>
+
+  <!-- LOG SCREEN -->
+  <div id="screen-log" class="screen">
+    <div class="log-header">
+      <button class="back-btn" onclick="showScreen('screen-home')" aria-label="Back">&#8592;</button>
+      <div class="log-title">Past Entries</div>
+    </div>
+    <div id="log-content" style="display:flex;flex-direction:column;flex:1;overflow:hidden;"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const PROMPTS = [
+    { label: "Wins & Good Things",        question: "What went well or brought you joy today?" },
+    { label: "Point of Tension",          question: "What's weighing on you or causing friction?" },
+    { label: "Gratitude",                 question: "What are you genuinely grateful for right now?" },
+    { label: "Work Highlights",           question: "What did you accomplish or make progress on?" },
+    { label: "Wish Happiness",            question: "Who do you want to wish happiness or good things to?" },
+    { label: "Training Check-in",         question: "How did training go? Body, energy, effort?" },
+    { label: "Looking Forward To",        question: "What's one thing you're looking forward to?" },
+  ];
+
+  let currentStep = 0;
+  let responses = [];
+
+  // ── Utilities ──────────────────────────────────────────────────────────────
+
+  function fmtDate(ts) {
+    const d = new Date(ts);
+    return d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  }
+
+  function fmtTime(ts) {
+    return new Date(ts).toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // ── Home ───────────────────────────────────────────────────────────────────
+
+  function initHome() {
+    document.getElementById('home-date').textContent =
+      new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+  }
+
+  // ── Journal flow ───────────────────────────────────────────────────────────
+
+  function startJournal() {
+    currentStep = 0;
+    responses = Array(PROMPTS.length).fill('');
+    renderPrompt();
+    showScreen('screen-prompt');
+  }
+
+  function renderPrompt() {
+    const p = PROMPTS[currentStep];
+    document.getElementById('prompt-label').textContent = `${currentStep + 1} of ${PROMPTS.length}`;
+    document.getElementById('prompt-question').textContent = p.question;
+    document.getElementById('prompt-input').value = responses[currentStep] || '';
+    document.getElementById('progress-label').textContent = `${currentStep + 1} / ${PROMPTS.length}`;
+
+    // dots
+    const dotsEl = document.getElementById('progress-dots');
+    dotsEl.innerHTML = '';
+    PROMPTS.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i < currentStep ? ' done' : i === currentStep ? ' active' : '');
+      dotsEl.appendChild(d);
+    });
+
+    // button label
+    document.getElementById('next-btn').textContent =
+      currentStep === PROMPTS.length - 1 ? 'Finish' : 'Next';
+
+    // focus textarea
+    setTimeout(() => document.getElementById('prompt-input').focus(), 80);
+  }
+
+  function nextPrompt() {
+    responses[currentStep] = document.getElementById('prompt-input').value.trim();
+    if (currentStep < PROMPTS.length - 1) {
+      currentStep++;
+      renderPrompt();
+    } else {
+      finishJournal();
+    }
+  }
+
+  function goBack() {
+    responses[currentStep] = document.getElementById('prompt-input').value.trim();
+    if (currentStep === 0) {
+      showScreen('screen-home');
+    } else {
+      currentStep--;
+      renderPrompt();
+    }
+  }
+
+  // keyboard shortcut: Cmd/Ctrl+Enter to advance
+  document.getElementById('prompt-input').addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') nextPrompt();
+  });
+
+  // ── Summary ────────────────────────────────────────────────────────────────
+
+  function finishJournal() {
+    const ts = Date.now();
+    const entry = { ts, responses: [...responses] };
+    saveEntry(entry);
+    renderSummary(entry);
+    showScreen('screen-summary');
+  }
+
+  function renderSummary(entry) {
+    document.getElementById('summary-meta').textContent =
+      fmtDate(entry.ts) + ' · ' + fmtTime(entry.ts);
+    document.getElementById('summary-entry').innerHTML = buildEntryHTML(entry);
+  }
+
+  function buildEntryHTML(entry) {
+    return PROMPTS.map((p, i) => {
+      const body = (entry.responses[i] || '—').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return `<div class="entry-section">
+        <div class="entry-section-label">${p.label}</div>
+        <div class="entry-section-body">${body}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function buildEntryText(entry) {
+    const header = `Daily Journal — ${fmtDate(entry.ts)} at ${fmtTime(entry.ts)}\n${'─'.repeat(48)}\n\n`;
+    const body = PROMPTS.map((p, i) =>
+      `${p.label.toUpperCase()}\n${entry.responses[i] || '—'}`
+    ).join('\n\n');
+    return header + body;
+  }
+
+  function copyEntry() {
+    const entries = loadEntries();
+    if (!entries.length) return;
+    const latest = entries[0];
+    const text = buildEntryText(latest);
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '⎘ Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    }).catch(() => showToast('Copy failed — try long-pressing'));
+  }
+
+  // ── Storage ────────────────────────────────────────────────────────────────
+
+  const STORAGE_KEY = 'daily_journal_entries';
+
+  function loadEntries() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    } catch { return []; }
+  }
+
+  function saveEntry(entry) {
+    const entries = loadEntries();
+    entries.unshift(entry); // newest first
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    showToast('Entry saved');
+  }
+
+  function deleteEntry(ts) {
+    const entries = loadEntries().filter(e => e.ts !== ts);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    renderLog();
+  }
+
+  // ── Log ────────────────────────────────────────────────────────────────────
+
+  function showLog() {
+    renderLog();
+    showScreen('screen-log');
+  }
+
+  function renderLog() {
+    const entries = loadEntries();
+    const container = document.getElementById('log-content');
+    container.innerHTML = '';
+
+    if (!entries.length) {
+      container.innerHTML = `<div class="log-empty">
+        <div class="log-empty-icon">&#x1F4D3;</div>
+        <div class="log-empty-text">No entries yet.<br>Start your first journal!</div>
+      </div>`;
+      return;
+    }
+
+    const list = document.createElement('div');
+    list.className = 'log-list';
+
+    entries.forEach(entry => {
+      const item = document.createElement('div');
+      item.className = 'log-item';
+      item.innerHTML = `
+        <div class="log-item-header" onclick="toggleLogItem(this)">
+          <div>
+            <div class="log-item-date">${fmtDate(entry.ts)}</div>
+            <div class="log-item-time">${fmtTime(entry.ts)}</div>
+          </div>
+          <div class="log-chevron">&#8964;</div>
+        </div>
+        <div class="log-item-body">
+          ${buildEntryHTML(entry)}
+          <div class="log-item-actions">
+            <button class="btn btn-copy" onclick="copyLogEntry(${entry.ts})">&#x2398; Copy</button>
+            <button class="btn btn-danger" onclick="confirmDelete(${entry.ts})">Delete</button>
+          </div>
+        </div>`;
+      list.appendChild(item);
+    });
+
+    container.appendChild(list);
+  }
+
+  function toggleLogItem(header) {
+    header.closest('.log-item').classList.toggle('open');
+  }
+
+  function copyLogEntry(ts) {
+    const entry = loadEntries().find(e => e.ts === ts);
+    if (!entry) return;
+    navigator.clipboard.writeText(buildEntryText(entry))
+      .then(() => showToast('Copied!'))
+      .catch(() => showToast('Copy failed'));
+  }
+
+  function confirmDelete(ts) {
+    if (confirm('Delete this entry? This cannot be undone.')) {
+      deleteEntry(ts);
+      showToast('Entry deleted');
+    }
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+
+  initHome();
+</script>
+</body>
+</html>
