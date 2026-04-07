@@ -290,13 +290,18 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
 
     .log-title {
       font-size: 22px;
       font-weight: 700;
       letter-spacing: -0.02em;
+      flex: 1;
+    }
+
+    .log-toolbar {
+      margin-bottom: 16px;
     }
 
     .log-empty {
@@ -467,6 +472,9 @@
     <div class="log-header">
       <button class="back-btn" onclick="showScreen('screen-home')" aria-label="Back">&#8592;</button>
       <div class="log-title">Past Entries</div>
+    </div>
+    <div class="log-toolbar">
+      <button class="btn btn-secondary" style="font-size:14px;padding:11px 18px;" onclick="exportAll()">&#x2913; Export All</button>
     </div>
     <div id="log-content" style="display:flex;flex-direction:column;flex:1;overflow:hidden;"></div>
   </div>
@@ -715,6 +723,22 @@
       deleteEntry(ts);
       showToast('Entry deleted');
     }
+  }
+
+  function exportAll() {
+    const entries = loadEntries();
+    if (!entries.length) { showToast('No entries to export'); return; }
+
+    const text = entries.map(e => buildEntryText(e)).join('\n\n' + '═'.repeat(48) + '\n\n');
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `journal-export-${dateStr}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`Exported ${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`);
   }
 
   // ── Init ───────────────────────────────────────────────────────────────────
