@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jeopardy Flashcards</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #060ce9;
+      --blue-dark: #0509a0;
+      --blue-deeper: #030770;
+      --blue-card: #0a0db8;
+      --gold: #ffb700;
+      --gold-dark: #cc9200;
+      --white: #ffffff;
+      --gray: #d0d4ff;
+      --green: #22c55e;
+      --red: #ef4444;
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: var(--blue-deeper);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--blue-dark);
+      border-bottom: 4px solid var(--gold);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: bold;
+      font-style: italic;
+      color: var(--gold);
+      text-shadow: 2px 2px 0 #000, 0 0 20px rgba(255,183,0,0.5);
+      letter-spacing: 2px;
+      flex: 1;
+    }
+
+    .back-btn {
+      background: transparent;
+      border: 2px solid var(--gold);
+      color: var(--gold);
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      display: none;
+    }
+    .back-btn:hover { background: var(--gold); color: #000; }
+    .back-btn.visible { display: block; }
+
+    /* ── SCREENS ── */
+    .screen { display: none; padding: 2rem 1.5rem; max-width: 900px; margin: 0 auto; }
+    .screen.active { display: block; }
+
+    /* ── HOME SCREEN ── */
+    .home-intro {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .home-intro h2 {
+      font-size: 1.3rem;
+      color: var(--gray);
+      font-weight: normal;
+      margin-bottom: 0.5rem;
+    }
+
+    .random-btn {
+      background: var(--gold);
+      color: #000;
+      border: none;
+      padding: 0.85rem 2.5rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: var(--shadow);
+    }
+    .random-btn:hover { background: var(--gold-dark); transform: translateY(-2px); }
+    .random-btn:active { transform: translateY(0); }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      color: var(--gray);
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 0.9rem 1rem 0.9rem 3rem;
+      background: var(--blue-card);
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      color: var(--white);
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-box input:focus { border-color: var(--gold); }
+    .search-box input::placeholder { color: var(--gray); opacity: 0.6; }
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.5;
+      font-size: 1.1rem;
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .category-card {
+      background: var(--blue-card);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .category-card:hover {
+      border-color: var(--gold);
+      background: var(--blue-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .category-card .cat-title {
+      font-size: 0.95rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gold);
+      margin-bottom: 0.3rem;
+    }
+    .category-card .cat-count {
+      font-size: 0.75rem;
+      color: var(--gray);
+    }
+
+    .load-more-btn {
+      display: block;
+      width: 100%;
+      background: transparent;
+      border: 2px solid rgba(255,255,255,0.2);
+      color: var(--gray);
+      padding: 0.75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    .load-more-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── STATUS MESSAGES ── */
+    .status-msg {
+      text-align: center;
+      padding: 2rem;
+      color: var(--gray);
+      font-style: italic;
+    }
+    .error-msg {
+      text-align: center;
+      padding: 1rem;
+      color: #ff8080;
+      background: rgba(255,0,0,0.1);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    /* ── DRILL SCREEN ── */
+    .drill-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .drill-category {
+      font-size: 1.3rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gold);
+    }
+    .drill-progress {
+      color: var(--gray);
+      font-size: 0.95rem;
+    }
+
+    .score-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .score-pill {
+      padding: 0.3rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+    .score-correct { background: rgba(34,197,94,0.2); border: 1px solid var(--green); color: var(--green); }
+    .score-incorrect { background: rgba(239,68,68,0.2); border: 1px solid var(--red); color: var(--red); }
+    .score-remaining { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: var(--gray); }
+
+    /* ── FLASHCARD ── */
+    .card-container {
+      perspective: 1200px;
+      margin-bottom: 1.5rem;
+      cursor: pointer;
+    }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      min-height: 280px;
+      transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .card-inner.flipped { transform: rotateY(180deg); }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      min-height: 280px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 2rem;
+      box-shadow: var(--shadow);
+    }
+    .card-front {
+      background: linear-gradient(145deg, var(--blue-card), var(--blue-dark));
+      border: 2px solid rgba(255,183,0,0.3);
+    }
+    .card-back {
+      background: linear-gradient(145deg, #0d1580, #060aa0);
+      border: 2px solid rgba(255,183,0,0.5);
+      transform: rotateY(180deg);
+    }
+
+    .card-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .card-clue {
+      font-size: 1.4rem;
+      text-align: center;
+      line-height: 1.5;
+      color: var(--white);
+    }
+    .card-hint {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .card-answer-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+      opacity: 0.8;
+    }
+    .card-answer {
+      font-size: 1.5rem;
+      text-align: center;
+      line-height: 1.4;
+      color: var(--white);
+      font-style: italic;
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .action-btns {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s 0.2s;
+      pointer-events: none;
+    }
+    .action-btns.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .action-btn {
+      flex: 1;
+      max-width: 200px;
+      padding: 1rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-correct {
+      background: var(--green);
+      color: #fff;
+    }
+    .btn-correct:hover { background: #16a34a; transform: translateY(-2px); }
+    .btn-incorrect {
+      background: var(--red);
+      color: #fff;
+    }
+    .btn-incorrect:hover { background: #dc2626; transform: translateY(-2px); }
+
+    /* ── PROGRESS BAR ── */
+    .progress-track {
+      height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+      transition: width 0.4s;
+    }
+
+    /* ── SUMMARY SCREEN ── */
+    .summary-card {
+      background: var(--blue-card);
+      border: 2px solid var(--gold);
+      border-radius: 16px;
+      padding: 3rem 2rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+    .summary-title {
+      font-size: 1.2rem;
+      color: var(--gray);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .summary-score {
+      font-size: 4rem;
+      font-weight: bold;
+      color: var(--gold);
+      margin: 0.5rem 0;
+    }
+    .summary-label {
+      font-size: 1.1rem;
+      color: var(--gray);
+      margin-bottom: 2rem;
+    }
+    .summary-stats {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-bottom: 2rem;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-size: 2rem; font-weight: bold; }
+    .stat-label { font-size: 0.8rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
+    .summary-btns {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .summary-btn {
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--gold);
+      color: #000;
+      border: none;
+    }
+    .btn-primary:hover { background: var(--gold-dark); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--gold);
+      border: 2px solid var(--gold);
+    }
+    .btn-secondary:hover { background: var(--gold); color: #000; }
+
+    /* ── LOADING SPINNER ── */
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255,183,0,0.3);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 2rem auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      .logo { font-size: 1.5rem; }
+      .card-clue { font-size: 1.2rem; }
+      .card-answer { font-size: 1.25rem; }
+      .summary-score { font-size: 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">JEOPARDY!</div>
+  <button class="back-btn" id="backBtn" onclick="goHome()">&#8592; Categories</button>
+</header>
+
+<div id="homeScreen" class="screen active">
+  <div class="home-intro">
+    <h2>Pick a category to drill, or test your luck with random clues</h2>
+  </div>
+  <div style="text-align:center; margin-bottom:1.5rem;">
+    <button class="random-btn" onclick="startRandomDrill()">&#9733; Random Drill</button>
+  </div>
+  <div class="divider">or browse categories</div>
+  <div class="search-box">
+    <span class="search-icon">&#128269;</span>
+    <input type="text" id="searchInput" placeholder="Search categories..." oninput="filterCategories()" autocomplete="off">
+  </div>
+  <div id="catError"></div>
+  <div id="categoriesContainer" class="categories-grid"></div>
+  <div id="loadMoreWrap" style="display:none; margin-top:0.5rem;">
+    <button class="load-more-btn" onclick="loadMoreCategories()">Load more categories&#8230;</button>
+  </div>
+</div>
+
+<div id="drillScreen" class="screen">
+  <div class="drill-header">
+    <div class="drill-category" id="drillCategoryName"></div>
+    <div class="drill-progress" id="drillProgress"></div>
+  </div>
+  <div class="score-bar">
+    <span class="score-pill score-correct" id="scoreCorrect">&#10003; 0</span>
+    <span class="score-pill score-incorrect" id="scoreIncorrect">&#10007; 0</span>
+    <span class="score-pill score-remaining" id="scoreRemaining">&#9632; 0 left</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="card-container" id="cardContainer" onclick="flipCard()">
+    <div class="card-inner" id="cardInner">
+      <div class="card-face card-front" id="cardFront">
+        <div class="card-value" id="cardValue"></div>
+        <div class="card-clue" id="cardClue"></div>
+        <div class="card-hint">Tap to reveal answer</div>
+      </div>
+      <div class="card-face card-back" id="cardBack">
+        <div class="card-answer-label">The correct response is&#8230;</div>
+        <div class="card-answer" id="cardAnswer"></div>
+      </div>
+    </div>
+  </div>
+  <div class="action-btns" id="actionBtns">
+    <button class="action-btn btn-correct" onclick="markAnswer(true)">&#10003; Got it!</button>
+    <button class="action-btn btn-incorrect" onclick="markAnswer(false)">&#10007; Missed it</button>
+  </div>
+</div>
+
+<div id="summaryScreen" class="screen">
+  <div class="summary-card">
+    <div class="summary-title" id="summaryCategory"></div>
+    <div class="summary-score" id="summaryPercent"></div>
+    <div class="summary-label" id="summaryLabel"></div>
+    <div class="summary-stats">
+      <div class="stat">
+        <div class="stat-num" style="color:var(--green)" id="summaryCorrect"></div>
+        <div class="stat-label">Correct</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" style="color:var(--red)" id="summaryIncorrect"></div>
+        <div class="stat-label">Missed</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="summaryTotal"></div>
+        <div class="stat-label">Total</div>
+      </div>
+    </div>
+    <div class="summary-btns">
+      <button class="summary-btn btn-primary" id="retryBtn" onclick="retryDrill()">&#8635; Try Again</button>
+      <button class="summary-btn btn-secondary" onclick="goHome()">&#8592; Choose Category</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://jservice.io/api';
+
+const state = {
+  categories: [],
+  catOffset: 0,
+  clues: [],
+  currentIndex: 0,
+  flipped: false,
+  correct: 0,
+  incorrect: 0,
+  categoryName: '',
+  lastCategoryId: null,
+  isRandom: false,
+};
+
+// ── SCREENS ────────────────────────────────────────────────────────────────
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const backBtn = document.getElementById('backBtn');
+  backBtn.classList.toggle('visible', id !== 'homeScreen');
+}
+
+function goHome() {
+  showScreen('homeScreen');
+}
+
+// ── API ─────────────────────────────────────────────────────────────────────
+
+async function apiFetch(path) {
+  const res = await fetch(API + path);
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+}
+
+// ── CATEGORIES ───────────────────────────────────────────────────────────────
+
+async function loadCategories(initial = false) {
+  if (initial) {
+    document.getElementById('categoriesContainer').innerHTML = '<div class="spinner"></div>';
+    document.getElementById('loadMoreWrap').style.display = 'none';
+    state.categories = [];
+    state.catOffset = 0;
+  }
+
+  try {
+    const data = await apiFetch(`/categories?count=100&offset=${state.catOffset}`);
+    state.catOffset += 100;
+
+    const fresh = data.filter(c => c.clues_count > 0);
+    state.categories.push(...fresh);
+
+    renderCategories(state.categories);
+    document.getElementById('loadMoreWrap').style.display = data.length === 100 ? 'block' : 'none';
+    document.getElementById('catError').innerHTML = '';
+  } catch (e) {
+    const errDiv = document.getElementById('catError');
+    if (initial) {
+      document.getElementById('categoriesContainer').innerHTML = '';
+      errDiv.innerHTML = `<div class="error-msg">Couldn't load categories — check your connection and <a href="#" onclick="loadCategories(true);return false;" style="color:var(--gold)">retry</a>.</div>`;
+    }
+  }
+}
+
+function loadMoreCategories() {
+  loadCategories(false);
+}
+
+function renderCategories(cats) {
+  const query = document.getElementById('searchInput').value.trim().toLowerCase();
+  const filtered = query
+    ? cats.filter(c => c.title.toLowerCase().includes(query))
+    : cats;
+
+  const container = document.getElementById('categoriesContainer');
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="status-msg">No categories match your search.</div>';
+    return;
+  }
+  container.innerHTML = filtered.map(c => `
+    <div class="category-card" onclick="startCategoryDrill(${c.id}, ${JSON.stringify(c.title).replace(/"/g, '&quot;')})">
+      <div class="cat-title">${escHtml(c.title)}</div>
+      <div class="cat-count">${c.clues_count} clue${c.clues_count !== 1 ? 's' : ''}</div>
+    </div>
+  `).join('');
+}
+
+function filterCategories() {
+  renderCategories(state.categories);
+}
+
+// ── DRILL ────────────────────────────────────────────────────────────────────
+
+async function startCategoryDrill(categoryId, categoryTitle) {
+  state.lastCategoryId = categoryId;
+  state.isRandom = false;
+  state.categoryName = categoryTitle;
+  showScreen('drillScreen');
+
+  document.getElementById('drillCategoryName').textContent = categoryTitle;
+  document.getElementById('cardContainer').style.display = 'none';
+  document.getElementById('actionBtns').classList.remove('visible');
+  document.getElementById('categoriesContainer').innerHTML = '';
+
+  const drillContent = document.getElementById('drillScreen');
+  const loadingEl = document.createElement('div');
+  loadingEl.className = 'spinner';
+  loadingEl.id = 'drillSpinner';
+  drillContent.appendChild(loadingEl);
+
+  try {
+    const data = await apiFetch(`/clues?category=${categoryId}`);
+    const valid = data.filter(c => c.question && c.answer && c.question.trim() && c.answer.trim() && c.question !== '=' && c.answer !== '=');
+    if (valid.length === 0) throw new Error('No valid clues');
+    const shuffled = shuffleArray(valid);
+    initDrill(shuffled);
+  } catch (e) {
+    document.getElementById('drillSpinner')?.remove();
+    document.getElementById('cardContainer').style.display = 'block';
+    document.getElementById('cardFront').innerHTML = `<div class="card-clue" style="color:#ff8080">Failed to load clues.<br><small>Try another category.</small></div>`;
+  }
+}
+
+async function startRandomDrill() {
+  state.isRandom = true;
+  state.categoryName = 'Random Clues';
+  showScreen('drillScreen');
+  document.getElementById('drillCategoryName').textContent = 'Random Clues';
+  document.getElementById('cardContainer').style.display = 'none';
+  document.getElementById('actionBtns').classList.remove('visible');
+
+  const spinner = document.createElement('div');
+  spinner.className = 'spinner';
+  spinner.id = 'drillSpinner';
+  document.getElementById('drillScreen').appendChild(spinner);
+
+  try {
+    const data = await apiFetch('/random?count=20');
+    const valid = data.filter(c => c.question && c.answer && c.question.trim() && c.answer.trim() && c.question !== '=' && c.answer !== '=');
+    if (valid.length === 0) throw new Error('No valid clues');
+    initDrill(valid);
+  } catch (e) {
+    document.getElementById('drillSpinner')?.remove();
+    document.getElementById('cardContainer').style.display = 'block';
+    document.getElementById('cardFront').innerHTML = `<div class="card-clue" style="color:#ff8080">Failed to load random clues.<br><small>Check your connection.</small></div>`;
+  }
+}
+
+function initDrill(clues) {
+  document.getElementById('drillSpinner')?.remove();
+  state.clues = clues;
+  state.currentIndex = 0;
+  state.correct = 0;
+  state.incorrect = 0;
+  state.flipped = false;
+
+  document.getElementById('cardContainer').style.display = 'block';
+  updateScoreBar();
+  showCard(0);
+}
+
+function retryDrill() {
+  if (state.isRandom) {
+    startRandomDrill();
+  } else {
+    startCategoryDrill(state.lastCategoryId, state.categoryName);
+  }
+}
+
+// ── CARD ─────────────────────────────────────────────────────────────────────
+
+function showCard(index) {
+  const clue = state.clues[index];
+  state.flipped = false;
+
+  document.getElementById('cardInner').classList.remove('flipped');
+  document.getElementById('actionBtns').classList.remove('visible');
+
+  const val = clue.value ? `$${clue.value}` : 'FINAL';
+  document.getElementById('cardValue').textContent = val;
+  document.getElementById('cardClue').textContent = clue.answer;  // Jeopardy: clue = "answer" field
+  document.getElementById('cardAnswer').textContent = clue.question; // correct response = "question" field
+
+  const total = state.clues.length;
+  document.getElementById('drillProgress').textContent = `${index + 1} / ${total}`;
+  document.getElementById('progressFill').style.width = `${((index) / total) * 100}%`;
+}
+
+function flipCard() {
+  if (state.flipped) return;
+  state.flipped = true;
+  document.getElementById('cardInner').classList.add('flipped');
+  document.getElementById('actionBtns').classList.add('visible');
+}
+
+function markAnswer(wasCorrect) {
+  if (wasCorrect) state.correct++; else state.incorrect++;
+  updateScoreBar();
+
+  const next = state.currentIndex + 1;
+  if (next >= state.clues.length) {
+    setTimeout(showSummary, 400);
+  } else {
+    state.currentIndex = next;
+    showCard(next);
+    document.getElementById('progressFill').style.width = `${(next / state.clues.length) * 100}%`;
+  }
+}
+
+function updateScoreBar() {
+  const remaining = state.clues.length - state.currentIndex - (state.flipped ? 1 : 0);
+  document.getElementById('scoreCorrect').textContent = `✓ ${state.correct}`;
+  document.getElementById('scoreIncorrect').textContent = `✗ ${state.incorrect}`;
+  document.getElementById('scoreRemaining').textContent = `◼ ${Math.max(0, state.clues.length - state.correct - state.incorrect)} left`;
+}
+
+// ── SUMMARY ──────────────────────────────────────────────────────────────────
+
+function showSummary() {
+  const total = state.clues.length;
+  const pct = total > 0 ? Math.round((state.correct / total) * 100) : 0;
+
+  document.getElementById('summaryCategory').textContent = state.categoryName;
+  document.getElementById('summaryPercent').textContent = `${pct}%`;
+  document.getElementById('summaryLabel').textContent = scoreLabel(pct);
+  document.getElementById('summaryCorrect').textContent = state.correct;
+  document.getElementById('summaryIncorrect').textContent = state.incorrect;
+  document.getElementById('summaryTotal').textContent = total;
+
+  showScreen('summaryScreen');
+}
+
+function scoreLabel(pct) {
+  if (pct === 100) return 'Perfect score — Alex would be proud!';
+  if (pct >= 80) return 'Excellent — you\'re ready for the show!';
+  if (pct >= 60) return 'Good work — keep studying!';
+  if (pct >= 40) return 'Getting there — practice makes perfect.';
+  return 'Tough category — try again!';
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function escHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+loadCategories(true);
+</script>
+</body>
+</html>
