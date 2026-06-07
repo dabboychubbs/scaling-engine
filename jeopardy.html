@@ -27,9 +27,9 @@
       color: var(--white);
       min-height: 100vh;
       overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    /* ── HEADER ── */
     header {
       background: var(--blue-dark);
       border-bottom: 4px solid var(--gold);
@@ -64,21 +64,23 @@
     .back-btn:hover { background: var(--gold); color: #000; }
     .back-btn.visible { display: block; }
 
-    /* ── SCREENS ── */
-    .screen { display: none; padding: 2rem 1.5rem; max-width: 900px; margin: 0 auto; }
+    .screen { display: none; padding: 1.5rem; max-width: 900px; margin: 0 auto; }
     .screen.active { display: block; }
 
-    /* ── HOME SCREEN ── */
-    .home-intro {
-      text-align: center;
-      margin-bottom: 2rem;
+    /* HOME */
+    .home-intro { text-align: center; margin-bottom: 1.5rem; }
+    .home-intro h2 { font-size: 1.1rem; color: var(--gray); font-weight: normal; }
+
+    .source-badge {
+      display: inline-block;
+      padding: 0.25rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-family: sans-serif;
+      margin-top: 0.5rem;
     }
-    .home-intro h2 {
-      font-size: 1.3rem;
-      color: var(--gray);
-      font-weight: normal;
-      margin-bottom: 0.5rem;
-    }
+    .badge-bundled { background: rgba(255,183,0,0.15); border: 1px solid var(--gold); color: var(--gold); }
+    .badge-live { background: rgba(34,197,94,0.15); border: 1px solid var(--green); color: var(--green); }
 
     .random-btn {
       background: var(--gold);
@@ -93,162 +95,137 @@
       transition: all 0.2s;
       box-shadow: var(--shadow);
     }
-    .random-btn:hover { background: var(--gold-dark); transform: translateY(-2px); }
-    .random-btn:active { transform: translateY(0); }
+    .random-btn:hover { background: var(--gold-dark); }
+    .random-btn:active { transform: scale(0.97); }
 
     .divider {
       display: flex;
       align-items: center;
       gap: 1rem;
-      margin: 1.5rem 0;
+      margin: 1.25rem 0;
       color: var(--gray);
+      font-size: 0.9rem;
     }
     .divider::before, .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(255,255,255,0.2);
+      content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.2);
     }
 
-    .search-box {
-      position: relative;
-      margin-bottom: 1.5rem;
-    }
+    .search-box { position: relative; margin-bottom: 1.25rem; }
     .search-box input {
       width: 100%;
-      padding: 0.9rem 1rem 0.9rem 3rem;
+      padding: 0.85rem 1rem 0.85rem 2.8rem;
       background: var(--blue-card);
-      border: 2px solid rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.15);
       border-radius: 8px;
       color: var(--white);
       font-size: 1rem;
       font-family: inherit;
       outline: none;
       transition: border-color 0.2s;
+      -webkit-appearance: none;
     }
     .search-box input:focus { border-color: var(--gold); }
-    .search-box input::placeholder { color: var(--gray); opacity: 0.6; }
-    .search-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      opacity: 0.5;
-      font-size: 1.1rem;
-    }
+    .search-box input::placeholder { color: rgba(255,255,255,0.4); }
+    .search-icon { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); opacity: 0.4; }
 
     .categories-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 0.75rem;
-      margin-bottom: 1.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
     }
 
     .category-card {
       background: var(--blue-card);
-      border: 2px solid rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,255,255,0.08);
       border-radius: 8px;
-      padding: 1rem;
+      padding: 0.9rem 0.75rem;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.18s;
       text-align: center;
+      -webkit-user-select: none;
+      user-select: none;
     }
-    .category-card:hover {
+    .category-card:hover, .category-card:active {
       border-color: var(--gold);
       background: var(--blue-dark);
       transform: translateY(-2px);
-      box-shadow: var(--shadow);
     }
-    .category-card .cat-title {
-      font-size: 0.95rem;
+    .cat-title {
+      font-size: 0.85rem;
       font-weight: bold;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       color: var(--gold);
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.25rem;
+      line-height: 1.3;
     }
-    .category-card .cat-count {
-      font-size: 0.75rem;
-      color: var(--gray);
-    }
+    .cat-count { font-size: 0.72rem; color: var(--gray); }
 
     .load-more-btn {
       display: block;
       width: 100%;
       background: transparent;
-      border: 2px solid rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.15);
       color: var(--gray);
-      padding: 0.75rem;
+      padding: 0.7rem;
       border-radius: 8px;
       cursor: pointer;
       font-family: inherit;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       transition: all 0.2s;
+      margin-top: 0.5rem;
     }
     .load-more-btn:hover { border-color: var(--gold); color: var(--gold); }
 
-    /* ── STATUS MESSAGES ── */
-    .status-msg {
-      text-align: center;
-      padding: 2rem;
-      color: var(--gray);
-      font-style: italic;
-    }
-    .error-msg {
-      text-align: center;
-      padding: 1rem;
-      color: #ff8080;
-      background: rgba(255,0,0,0.1);
-      border-radius: 8px;
-      margin-bottom: 1rem;
-    }
+    .status-msg { text-align: center; padding: 2rem; color: var(--gray); font-style: italic; }
 
-    /* ── DRILL SCREEN ── */
+    /* DRILL */
     .drill-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.4rem;
     }
     .drill-category {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-weight: bold;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      letter-spacing: 1.5px;
       color: var(--gold);
+      line-height: 1.2;
     }
-    .drill-progress {
-      color: var(--gray);
-      font-size: 0.95rem;
-    }
+    .drill-progress { color: var(--gray); font-size: 0.9rem; white-space: nowrap; }
 
-    .score-bar {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
+    .score-bar { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
     .score-pill {
-      padding: 0.3rem 0.9rem;
+      padding: 0.25rem 0.75rem;
       border-radius: 20px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: bold;
+      font-family: sans-serif;
     }
-    .score-correct { background: rgba(34,197,94,0.2); border: 1px solid var(--green); color: var(--green); }
-    .score-incorrect { background: rgba(239,68,68,0.2); border: 1px solid var(--red); color: var(--red); }
-    .score-remaining { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: var(--gray); }
+    .score-correct { background: rgba(34,197,94,0.15); border: 1px solid var(--green); color: var(--green); }
+    .score-incorrect { background: rgba(239,68,68,0.15); border: 1px solid var(--red); color: var(--red); }
+    .score-remaining { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: var(--gray); }
 
-    /* ── FLASHCARD ── */
-    .card-container {
-      perspective: 1200px;
-      margin-bottom: 1.5rem;
-      cursor: pointer;
+    .progress-track {
+      height: 4px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 2px;
+      margin-bottom: 1.25rem;
+      overflow: hidden;
     }
+    .progress-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.4s; }
+
+    /* FLASHCARD */
+    .card-container { perspective: 1200px; margin-bottom: 1.25rem; cursor: pointer; }
     .card-inner {
       position: relative;
       width: 100%;
-      min-height: 280px;
+      min-height: 260px;
       transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
       transform-style: preserve-3d;
     }
@@ -256,188 +233,89 @@
 
     .card-face {
       position: absolute;
-      width: 100%;
-      min-height: 280px;
-      backface-visibility: hidden;
+      inset: 0;
+      min-height: 260px;
       -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
       border-radius: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 2.5rem 2rem;
+      padding: 2rem 1.75rem;
       box-shadow: var(--shadow);
     }
     .card-front {
       background: linear-gradient(145deg, var(--blue-card), var(--blue-dark));
-      border: 2px solid rgba(255,183,0,0.3);
+      border: 2px solid rgba(255,183,0,0.25);
     }
     .card-back {
       background: linear-gradient(145deg, #0d1580, #060aa0);
-      border: 2px solid rgba(255,183,0,0.5);
+      border: 2px solid rgba(255,183,0,0.45);
       transform: rotateY(180deg);
     }
 
-    .card-value {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--gold);
-      margin-bottom: 1rem;
-    }
-    .card-clue {
-      font-size: 1.4rem;
-      text-align: center;
-      line-height: 1.5;
-      color: var(--white);
-    }
-    .card-hint {
-      margin-top: 1.5rem;
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.4);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
+    .card-value { font-size: 1.4rem; font-weight: bold; color: var(--gold); margin-bottom: 0.9rem; }
+    .card-clue { font-size: 1.35rem; text-align: center; line-height: 1.5; }
+    .card-hint { margin-top: 1.25rem; font-size: 0.75rem; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 2px; font-family: sans-serif; }
+    .card-answer-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); margin-bottom: 0.6rem; opacity: 0.8; font-family: sans-serif; }
+    .card-answer { font-size: 1.45rem; text-align: center; line-height: 1.4; font-style: italic; }
 
-    .card-answer-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--gold);
-      margin-bottom: 0.75rem;
-      opacity: 0.8;
-    }
-    .card-answer {
-      font-size: 1.5rem;
-      text-align: center;
-      line-height: 1.4;
-      color: var(--white);
-      font-style: italic;
-    }
-
-    /* ── ACTION BUTTONS ── */
     .action-btns {
       display: flex;
-      gap: 1rem;
+      gap: 0.85rem;
       justify-content: center;
       opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.3s 0.2s;
+      transform: translateY(8px);
+      transition: all 0.25s 0.15s;
       pointer-events: none;
     }
-    .action-btns.visible {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
+    .action-btns.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
     .action-btn {
       flex: 1;
       max-width: 200px;
-      padding: 1rem 1.5rem;
+      padding: 0.9rem 1.25rem;
       border: none;
       border-radius: 8px;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: bold;
       font-family: inherit;
       cursor: pointer;
       transition: all 0.2s;
     }
-    .btn-correct {
-      background: var(--green);
-      color: #fff;
-    }
-    .btn-correct:hover { background: #16a34a; transform: translateY(-2px); }
-    .btn-incorrect {
-      background: var(--red);
-      color: #fff;
-    }
-    .btn-incorrect:hover { background: #dc2626; transform: translateY(-2px); }
+    .btn-correct { background: var(--green); color: #fff; }
+    .btn-correct:hover { background: #16a34a; }
+    .btn-incorrect { background: var(--red); color: #fff; }
+    .btn-incorrect:hover { background: #dc2626; }
 
-    /* ── PROGRESS BAR ── */
-    .progress-track {
-      height: 4px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 2px;
-      margin-bottom: 1.5rem;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      background: var(--gold);
-      border-radius: 2px;
-      transition: width 0.4s;
-    }
-
-    /* ── SUMMARY SCREEN ── */
+    /* SUMMARY */
     .summary-card {
       background: var(--blue-card);
       border: 2px solid var(--gold);
       border-radius: 16px;
-      padding: 3rem 2rem;
+      padding: 2.5rem 1.5rem;
       text-align: center;
       box-shadow: var(--shadow);
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
-    .summary-title {
-      font-size: 1.2rem;
-      color: var(--gray);
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    .summary-score {
-      font-size: 4rem;
-      font-weight: bold;
-      color: var(--gold);
-      margin: 0.5rem 0;
-    }
-    .summary-label {
-      font-size: 1.1rem;
-      color: var(--gray);
-      margin-bottom: 2rem;
-    }
-    .summary-stats {
-      display: flex;
-      justify-content: center;
-      gap: 3rem;
-      margin-bottom: 2rem;
-    }
+    .summary-title { font-size: 1rem; color: var(--gray); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.4rem; font-family: sans-serif; }
+    .summary-score { font-size: 3.5rem; font-weight: bold; color: var(--gold); margin: 0.4rem 0; }
+    .summary-label { font-size: 1rem; color: var(--gray); margin-bottom: 1.75rem; }
+    .summary-stats { display: flex; justify-content: center; gap: 2.5rem; margin-bottom: 1.75rem; }
     .stat { text-align: center; }
-    .stat-num { font-size: 2rem; font-weight: bold; }
-    .stat-label { font-size: 0.8rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
-    .summary-btns {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .summary-btn {
-      padding: 0.85rem 2rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: bold;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-primary {
-      background: var(--gold);
-      color: #000;
-      border: none;
-    }
+    .stat-num { font-size: 1.9rem; font-weight: bold; }
+    .stat-label { font-size: 0.72rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; font-family: sans-serif; }
+    .summary-btns { display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap; }
+    .summary-btn { padding: 0.8rem 1.75rem; border-radius: 8px; font-size: 0.95rem; font-weight: bold; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .btn-primary { background: var(--gold); color: #000; border: none; }
     .btn-primary:hover { background: var(--gold-dark); }
-    .btn-secondary {
-      background: transparent;
-      color: var(--gold);
-      border: 2px solid var(--gold);
-    }
+    .btn-secondary { background: transparent; color: var(--gold); border: 2px solid var(--gold); }
     .btn-secondary:hover { background: var(--gold); color: #000; }
 
-    /* ── LOADING SPINNER ── */
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(255,183,0,0.3);
+      width: 36px; height: 36px;
+      border: 3px solid rgba(255,183,0,0.25);
       border-top-color: var(--gold);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
@@ -445,12 +323,10 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── RESPONSIVE ── */
     @media (max-width: 480px) {
       .logo { font-size: 1.5rem; }
-      .card-clue { font-size: 1.2rem; }
-      .card-answer { font-size: 1.25rem; }
-      .summary-score { font-size: 3rem; }
+      .card-clue { font-size: 1.15rem; }
+      .card-answer { font-size: 1.2rem; }
     }
   </style>
 </head>
@@ -463,20 +339,20 @@
 
 <div id="homeScreen" class="screen active">
   <div class="home-intro">
-    <h2>Pick a category to drill, or test your luck with random clues</h2>
+    <h2>Pick a category to drill, or try random clues</h2>
+    <div id="sourceBadge" class="source-badge badge-bundled">20 bundled categories &bull; loading live data&hellip;</div>
   </div>
-  <div style="text-align:center; margin-bottom:1.5rem;">
+  <div style="text-align:center; margin-bottom:1.25rem;">
     <button class="random-btn" onclick="startRandomDrill()">&#9733; Random Drill</button>
   </div>
-  <div class="divider">or browse categories</div>
+  <div class="divider">browse categories</div>
   <div class="search-box">
     <span class="search-icon">&#128269;</span>
-    <input type="text" id="searchInput" placeholder="Search categories..." oninput="filterCategories()" autocomplete="off">
+    <input type="text" id="searchInput" placeholder="Search categories&hellip;" oninput="filterCategories()" autocomplete="off">
   </div>
-  <div id="catError"></div>
   <div id="categoriesContainer" class="categories-grid"></div>
-  <div id="loadMoreWrap" style="display:none; margin-top:0.5rem;">
-    <button class="load-more-btn" onclick="loadMoreCategories()">Load more categories&#8230;</button>
+  <div id="loadMoreWrap" style="display:none;">
+    <button class="load-more-btn" onclick="loadMoreFromAPI()">Load more from live API&hellip;</button>
   </div>
 </div>
 
@@ -488,25 +364,25 @@
   <div class="score-bar">
     <span class="score-pill score-correct" id="scoreCorrect">&#10003; 0</span>
     <span class="score-pill score-incorrect" id="scoreIncorrect">&#10007; 0</span>
-    <span class="score-pill score-remaining" id="scoreRemaining">&#9632; 0 left</span>
+    <span class="score-pill score-remaining" id="scoreRemaining">0 left</span>
   </div>
   <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   <div class="card-container" id="cardContainer" onclick="flipCard()">
     <div class="card-inner" id="cardInner">
-      <div class="card-face card-front" id="cardFront">
+      <div class="card-face card-front">
         <div class="card-value" id="cardValue"></div>
         <div class="card-clue" id="cardClue"></div>
         <div class="card-hint">Tap to reveal answer</div>
       </div>
-      <div class="card-face card-back" id="cardBack">
-        <div class="card-answer-label">The correct response is&#8230;</div>
+      <div class="card-face card-back">
+        <div class="card-answer-label">The correct response is&hellip;</div>
         <div class="card-answer" id="cardAnswer"></div>
       </div>
     </div>
   </div>
   <div class="action-btns" id="actionBtns">
-    <button class="action-btn btn-correct" onclick="markAnswer(true)">&#10003; Got it!</button>
     <button class="action-btn btn-incorrect" onclick="markAnswer(false)">&#10007; Missed it</button>
+    <button class="action-btn btn-correct" onclick="markAnswer(true)">&#10003; Got it!</button>
   </div>
 </div>
 
@@ -516,32 +392,170 @@
     <div class="summary-score" id="summaryPercent"></div>
     <div class="summary-label" id="summaryLabel"></div>
     <div class="summary-stats">
-      <div class="stat">
-        <div class="stat-num" style="color:var(--green)" id="summaryCorrect"></div>
-        <div class="stat-label">Correct</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num" style="color:var(--red)" id="summaryIncorrect"></div>
-        <div class="stat-label">Missed</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num" id="summaryTotal"></div>
-        <div class="stat-label">Total</div>
-      </div>
+      <div class="stat"><div class="stat-num" style="color:var(--green)" id="summaryCorrect"></div><div class="stat-label">Correct</div></div>
+      <div class="stat"><div class="stat-num" style="color:var(--red)" id="summaryIncorrect"></div><div class="stat-label">Missed</div></div>
+      <div class="stat"><div class="stat-num" id="summaryTotal"></div><div class="stat-label">Total</div></div>
     </div>
     <div class="summary-btns">
-      <button class="summary-btn btn-primary" id="retryBtn" onclick="retryDrill()">&#8635; Try Again</button>
-      <button class="summary-btn btn-secondary" onclick="goHome()">&#8592; Choose Category</button>
+      <button class="summary-btn btn-primary" onclick="retryDrill()">&#8635; Try Again</button>
+      <button class="summary-btn btn-secondary" onclick="goHome()">&#8592; Categories</button>
     </div>
   </div>
 </div>
 
 <script>
-const API = 'https://jservice.io/api';
+// ── BUNDLED DATA ──────────────────────────────────────────────────────────────
+// 20 categories × 5 clues — works fully offline
+
+const BUNDLED = [
+  { id:'b1', title:'U.S. PRESIDENTS', clues_count:5, clues:[
+    { id:'b101', answer:"The only U.S. president to serve two non-consecutive terms", question:"Who is Grover Cleveland?", value:400 },
+    { id:'b102', answer:"He was the first U.S. president to live in the White House", question:"Who is John Adams?", value:200 },
+    { id:'b103', answer:"This president issued the Emancipation Proclamation in 1863", question:"Who is Abraham Lincoln?", value:200 },
+    { id:'b104', answer:"He became the youngest person to serve as president after McKinley's assassination in 1901", question:"Who is Theodore Roosevelt?", value:600 },
+    { id:'b105', answer:"The first U.S. president to resign from office", question:"Who is Richard Nixon?", value:400 },
+  ]},
+  { id:'b2', title:'WORLD CAPITALS', clues_count:5, clues:[
+    { id:'b201', answer:"This planned city replaced Rio de Janeiro as Brazil's capital in 1960", question:"What is Brasília?", value:400 },
+    { id:'b202', answer:"The capital of Australia — not Sydney", question:"What is Canberra?", value:200 },
+    { id:'b203', answer:"New Zealand's capital city, on the southern tip of the North Island", question:"What is Wellington?", value:200 },
+    { id:'b204', answer:"The capital of Canada", question:"What is Ottawa?", value:200 },
+    { id:'b205', answer:"The capital of Argentina, whose name means 'Good Airs' in Spanish", question:"What is Buenos Aires?", value:400 },
+  ]},
+  { id:'b3', title:'SCIENCE & NATURE', clues_count:5, clues:[
+    { id:'b301', answer:"The element with the chemical symbol Fe", question:"What is iron?", value:200 },
+    { id:'b302', answer:"The gas that makes up about 78% of Earth's atmosphere", question:"What is nitrogen?", value:400 },
+    { id:'b303', answer:"The powerhouse of the cell", question:"What is the mitochondria?", value:200 },
+    { id:'b304', answer:"The nearest star to Earth, other than the Sun", question:"What is Proxima Centauri?", value:600 },
+    { id:'b305', answer:"Water freezes at this temperature in Celsius", question:"What is 0 degrees?", value:200 },
+  ]},
+  { id:'b4', title:'CLASSIC LITERATURE', clues_count:5, clues:[
+    { id:'b401', answer:"The author of 'Pride and Prejudice'", question:"Who is Jane Austen?", value:200 },
+    { id:'b402', answer:"George Orwell's 1949 dystopian novel featuring Big Brother", question:"What is 1984?", value:200 },
+    { id:'b403', answer:"Herman Melville's epic about Captain Ahab's obsession with a white whale", question:"What is Moby-Dick?", value:400 },
+    { id:'b404', answer:"The author of 'The Canterbury Tales'", question:"Who is Geoffrey Chaucer?", value:600 },
+    { id:'b405', answer:"This Charles Dickens novel opens with 'It was the best of times, it was the worst of times'", question:"What is A Tale of Two Cities?", value:400 },
+  ]},
+  { id:'b5', title:'WORLD GEOGRAPHY', clues_count:5, clues:[
+    { id:'b501', answer:"The world's largest ocean", question:"What is the Pacific Ocean?", value:200 },
+    { id:'b502', answer:"The smallest country in the world by area", question:"What is Vatican City?", value:200 },
+    { id:'b503', answer:"The longest river in South America", question:"What is the Amazon?", value:400 },
+    { id:'b504', answer:"The mountain range that forms the natural boundary between Europe and Asia", question:"What are the Ural Mountains?", value:600 },
+    { id:'b505', answer:"The only country that is also a continent", question:"What is Australia?", value:200 },
+  ]},
+  { id:'b6', title:'GREEK MYTHOLOGY', clues_count:5, clues:[
+    { id:'b601', answer:"The Greek god of the sea", question:"Who is Poseidon?", value:200 },
+    { id:'b602', answer:"The half-man, half-bull creature kept in the Labyrinth", question:"What is the Minotaur?", value:400 },
+    { id:'b603', answer:"The Greek goddess of wisdom and warfare", question:"Who is Athena?", value:200 },
+    { id:'b604', answer:"This hero completed twelve labors as penance", question:"Who is Hercules?", value:200 },
+    { id:'b605', answer:"In Greek myth, she opened a container and released all evils into the world", question:"Who is Pandora?", value:400 },
+  ]},
+  { id:'b7', title:'CLASSIC MOVIES', clues_count:5, clues:[
+    { id:'b701', answer:"The 1972 Francis Ford Coppola film based on Mario Puzo's novel", question:"What is The Godfather?", value:200 },
+    { id:'b702', answer:"The 1939 Judy Garland classic following Dorothy and her dog Toto", question:"What is The Wizard of Oz?", value:200 },
+    { id:'b703', answer:"This 1942 Humphrey Bogart film is set in wartime Morocco", question:"What is Casablanca?", value:400 },
+    { id:'b704', answer:"Alfred Hitchcock's 1960 thriller featuring the infamous shower scene at the Bates Motel", question:"What is Psycho?", value:400 },
+    { id:'b705', answer:"This 1994 Quentin Tarantino film features interweaving crime stories in Los Angeles", question:"What is Pulp Fiction?", value:600 },
+  ]},
+  { id:'b8', title:'MUSIC', clues_count:5, clues:[
+    { id:'b801', answer:"This Michael Jackson album is the best-selling album of all time", question:"What is Thriller?", value:200 },
+    { id:'b802', answer:"The lead singer of the band Queen", question:"Who is Freddie Mercury?", value:200 },
+    { id:'b803', answer:"Beethoven's Ninth Symphony features this choral finale based on Schiller's poem", question:"What is 'Ode to Joy'?", value:400 },
+    { id:'b804', answer:"Bob Dylan's birth name", question:"What is Robert Zimmerman?", value:600 },
+    { id:'b805', answer:"The Beatles' final studio album, released in 1969", question:"What is Abbey Road?", value:400 },
+  ]},
+  { id:'b9', title:'SPORTS', clues_count:5, clues:[
+    { id:'b901', answer:"Brazil has won the FIFA World Cup this many times, more than any other nation", question:"What is 5?", value:400 },
+    { id:'b902', answer:"Muhammad Ali's birth name", question:"What is Cassius Clay?", value:400 },
+    { id:'b903', answer:"The only sport played on the Moon (by Alan Shepard during Apollo 14)", question:"What is golf?", value:600 },
+    { id:'b904', answer:"The number of rings on the Olympic flag", question:"What is 5?", value:200 },
+    { id:'b905', answer:"The country that has hosted the most Summer Olympic Games", question:"What is the United States?", value:600 },
+  ]},
+  { id:'b10', title:'WORLD HISTORY', clues_count:5, clues:[
+    { id:'b1001', answer:"The year the Berlin Wall fell", question:"What is 1989?", value:400 },
+    { id:'b1002', answer:"The war that ended with the Treaty of Versailles in 1919", question:"What is World War I?", value:200 },
+    { id:'b1003', answer:"Napoleon Bonaparte was exiled to this remote island after his defeat at Waterloo", question:"What is Saint Helena?", value:600 },
+    { id:'b1004', answer:"Julius Caesar was assassinated on the 'Ides of March' in this year BC", question:"What is 44 BC?", value:400 },
+    { id:'b1005', answer:"The first woman to win a Nobel Prize — she won it in Physics in 1903", question:"Who is Marie Curie?", value:200 },
+  ]},
+  { id:'b11', title:'ANIMALS', clues_count:5, clues:[
+    { id:'b1101', answer:"The only mammal capable of true, sustained flight", question:"What is a bat?", value:200 },
+    { id:'b1102', answer:"A group of lions is called this", question:"What is a pride?", value:200 },
+    { id:'b1103', answer:"The fastest land animal", question:"What is a cheetah?", value:200 },
+    { id:'b1104', answer:"The largest land animal on Earth", question:"What is the African elephant?", value:200 },
+    { id:'b1105', answer:"This shark species has the longest confirmed lifespan of any vertebrate — over 400 years", question:"What is the Greenland shark?", value:800 },
+  ]},
+  { id:'b12', title:'FOOD & DRINK', clues_count:5, clues:[
+    { id:'b1201', answer:"The main ingredient in guacamole", question:"What is avocado?", value:200 },
+    { id:'b1202', answer:"The 'fifth taste,' beyond sweet, sour, salty, and bitter", question:"What is umami?", value:400 },
+    { id:'b1203', answer:"The country of origin of sushi", question:"What is Japan?", value:200 },
+    { id:'b1204', answer:"The world's most expensive spice by weight, derived from crocus flower stigmas", question:"What is saffron?", value:600 },
+    { id:'b1205', answer:"This cooking technique involves vacuum-sealing food and cooking it in a precise water bath", question:"What is sous vide?", value:800 },
+  ]},
+  { id:'b13', title:'SHAKESPEARE', clues_count:5, clues:[
+    { id:'b1301', answer:"The setting of 'Romeo and Juliet'", question:"What is Verona?", value:200 },
+    { id:'b1302', answer:"The character who delivers the 'To be, or not to be' soliloquy", question:"Who is Hamlet?", value:200 },
+    { id:'b1303', answer:"The Shakespearean play in which Shylock demands a 'pound of flesh'", question:"What is The Merchant of Venice?", value:400 },
+    { id:'b1304', answer:"Juliet's family name in 'Romeo and Juliet'", question:"What is Capulet?", value:200 },
+    { id:'b1305', answer:"Shakespeare's shortest play, a comedy about mistaken identity and separated twins", question:"What is The Comedy of Errors?", value:800 },
+  ]},
+  { id:'b14', title:'SPACE', clues_count:5, clues:[
+    { id:'b1401', answer:"The first human to walk on the Moon", question:"Who is Neil Armstrong?", value:200 },
+    { id:'b1402', answer:"The planet with the most confirmed moons in our solar system", question:"What is Saturn?", value:400 },
+    { id:'b1403', answer:"The name of the NASA space telescope launched in 1990", question:"What is Hubble?", value:200 },
+    { id:'b1404', answer:"The planet closest to the Sun", question:"What is Mercury?", value:200 },
+    { id:'b1405', answer:"A rapidly rotating neutron star that emits regular pulses of radio waves", question:"What is a pulsar?", value:600 },
+  ]},
+  { id:'b15', title:'INVENTORS', clues_count:5, clues:[
+    { id:'b1501', answer:"Alexander Graham Bell's invention of 1876", question:"What is the telephone?", value:200 },
+    { id:'b1502', answer:"Tim Berners-Lee invented this in 1989", question:"What is the World Wide Web?", value:400 },
+    { id:'b1503', answer:"The Wright Brothers' first powered flight took place in this North Carolina location", question:"What is Kitty Hawk?", value:400 },
+    { id:'b1504', answer:"This inventor held over 1,000 U.S. patents, including the phonograph and motion picture camera", question:"Who is Thomas Edison?", value:200 },
+    { id:'b1505', answer:"Credited with inventing the radio, this Italian won the 1909 Nobel Prize in Physics", question:"Who is Guglielmo Marconi?", value:600 },
+  ]},
+  { id:'b16', title:'AMERICAN HISTORY', clues_count:5, clues:[
+    { id:'b1601', answer:"The year the U.S. Declaration of Independence was signed", question:"What is 1776?", value:200 },
+    { id:'b1602', answer:"The first state to ratify the U.S. Constitution, in 1787", question:"What is Delaware?", value:600 },
+    { id:'b1603', answer:"The country from which the U.S. purchased the Louisiana Territory in 1803", question:"What is France?", value:400 },
+    { id:'b1604', answer:"The first permanent English settlement in North America, established in 1607", question:"What is Jamestown?", value:400 },
+    { id:'b1605', answer:"The battle often called the turning point of the American Civil War, fought July 1-3, 1863", question:"What is Gettysburg?", value:400 },
+  ]},
+  { id:'b17', title:'MATHEMATICS', clues_count:5, clues:[
+    { id:'b1701', answer:"The mathematical constant approximately equal to 3.14159", question:"What is pi?", value:200 },
+    { id:'b1702', answer:"The square root of 144", question:"What is 12?", value:200 },
+    { id:'b1703', answer:"This theorem states that in a right triangle, a² + b² = c²", question:"What is the Pythagorean theorem?", value:200 },
+    { id:'b1704', answer:"The only even prime number", question:"What is 2?", value:400 },
+    { id:'b1705', answer:"Isaac Newton and Gottfried Leibniz independently developed this branch of mathematics", question:"What is calculus?", value:600 },
+  ]},
+  { id:'b18', title:'ART HISTORY', clues_count:5, clues:[
+    { id:'b1801', answer:"The artist who painted the Mona Lisa", question:"Who is Leonardo da Vinci?", value:200 },
+    { id:'b1802', answer:"Vincent van Gogh's painting of a swirling night sky over a village", question:"What is The Starry Night?", value:200 },
+    { id:'b1803', answer:"The Spanish artist who co-founded Cubism", question:"Who is Pablo Picasso?", value:200 },
+    { id:'b1804', answer:"The artist who painted the Sistine Chapel ceiling", question:"Who is Michelangelo?", value:200 },
+    { id:'b1805', answer:"This American pop artist is known for his 'Campbell's Soup Cans' series", question:"Who is Andy Warhol?", value:400 },
+  ]},
+  { id:'b19', title:'FAMOUS FIRSTS', clues_count:5, clues:[
+    { id:'b1901', answer:"The first woman to fly solo across the Atlantic Ocean, in 1932", question:"Who is Amelia Earhart?", value:200 },
+    { id:'b1902', answer:"The first African American to serve as U.S. Secretary of State", question:"Who is Colin Powell?", value:400 },
+    { id:'b1903', answer:"The first human in space, who orbited Earth in 1961", question:"Who is Yuri Gagarin?", value:200 },
+    { id:'b1904', answer:"The first woman to win a Nobel Prize — she won two, in Physics and Chemistry", question:"Who is Marie Curie?", value:200 },
+    { id:'b1905', answer:"This ship, claimed to be unsinkable, sank on its maiden voyage in April 1912", question:"What is the Titanic?", value:200 },
+  ]},
+  { id:'b20', title:'THE SOLAR SYSTEM', clues_count:5, clues:[
+    { id:'b2001', answer:"The largest planet in our solar system", question:"What is Jupiter?", value:200 },
+    { id:'b2002', answer:"The planet known for its prominent, visible ring system", question:"What is Saturn?", value:200 },
+    { id:'b2003', answer:"The only planet that rotates on its side, with an axial tilt of about 98 degrees", question:"What is Uranus?", value:600 },
+    { id:'b2004', answer:"Mars is also known by this nickname, for the color of its iron oxide surface", question:"What is the Red Planet?", value:200 },
+    { id:'b2005', answer:"This dwarf planet was reclassified from the ninth planet in 2006", question:"What is Pluto?", value:400 },
+  ]},
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
 
 const state = {
-  categories: [],
-  catOffset: 0,
+  categories: [...BUNDLED],  // starts with bundled, API results appended
+  apiOffset: 0,
+  apiLoaded: false,
   clues: [],
   currentIndex: 0,
   flipped: false,
@@ -552,112 +566,143 @@ const state = {
   isRandom: false,
 };
 
-// ── SCREENS ────────────────────────────────────────────────────────────────
+// ── SCREENS ───────────────────────────────────────────────────────────────────
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const backBtn = document.getElementById('backBtn');
-  backBtn.classList.toggle('visible', id !== 'homeScreen');
+  document.getElementById('backBtn').classList.toggle('visible', id !== 'homeScreen');
+  window.scrollTo(0, 0);
 }
 
-function goHome() {
-  showScreen('homeScreen');
-}
+function goHome() { showScreen('homeScreen'); }
 
-// ── API ─────────────────────────────────────────────────────────────────────
+// ── API ───────────────────────────────────────────────────────────────────────
 
-async function apiFetch(path) {
-  const res = await fetch(API + path);
-  if (!res.ok) throw new Error(`API error ${res.status}`);
-  return res.json();
-}
-
-// ── CATEGORIES ───────────────────────────────────────────────────────────────
-
-async function loadCategories(initial = false) {
-  if (initial) {
-    document.getElementById('categoriesContainer').innerHTML = '<div class="spinner"></div>';
-    document.getElementById('loadMoreWrap').style.display = 'none';
-    state.categories = [];
-    state.catOffset = 0;
-  }
-
+async function apiFetch(path, timeoutMs = 8000) {
+  const url = 'https://jservice.io/api' + path;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    const data = await apiFetch(`/categories?count=100&offset=${state.catOffset}`);
-    state.catOffset += 100;
-
-    const fresh = data.filter(c => c.clues_count > 0);
-    state.categories.push(...fresh);
-
-    renderCategories(state.categories);
-    document.getElementById('loadMoreWrap').style.display = data.length === 100 ? 'block' : 'none';
-    document.getElementById('catError').innerHTML = '';
+    const res = await fetch(url, { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return await res.json();
   } catch (e) {
-    const errDiv = document.getElementById('catError');
-    if (initial) {
-      document.getElementById('categoriesContainer').innerHTML = '';
-      errDiv.innerHTML = `<div class="error-msg">Couldn't load categories — check your connection and <a href="#" onclick="loadCategories(true);return false;" style="color:var(--gold)">retry</a>.</div>`;
+    clearTimeout(timer);
+    // Try CORS proxy fallback
+    const proxy = 'https://corsproxy.io/?' + encodeURIComponent(url);
+    const ctrl2 = new AbortController();
+    const timer2 = setTimeout(() => ctrl2.abort(), timeoutMs);
+    try {
+      const res2 = await fetch(proxy, { signal: ctrl2.signal });
+      clearTimeout(timer2);
+      if (!res2.ok) throw new Error('HTTP ' + res2.status);
+      return await res2.json();
+    } catch (e2) {
+      clearTimeout(timer2);
+      throw e2;
     }
   }
 }
 
-function loadMoreCategories() {
-  loadCategories(false);
-}
+// ── CATEGORIES ────────────────────────────────────────────────────────────────
 
-function renderCategories(cats) {
+function renderCategories() {
   const query = document.getElementById('searchInput').value.trim().toLowerCase();
   const filtered = query
-    ? cats.filter(c => c.title.toLowerCase().includes(query))
-    : cats;
+    ? state.categories.filter(c => c.title.toLowerCase().includes(query))
+    : state.categories;
 
   const container = document.getElementById('categoriesContainer');
   if (filtered.length === 0) {
-    container.innerHTML = '<div class="status-msg">No categories match your search.</div>';
+    container.innerHTML = '<div class="status-msg">No matching categories.</div>';
     return;
   }
   container.innerHTML = filtered.map(c => `
-    <div class="category-card" onclick="startCategoryDrill(${c.id}, ${JSON.stringify(c.title).replace(/"/g, '&quot;')})">
+    <div class="category-card" onclick="startCategoryDrill('${c.id}', \`${c.title.replace(/`/g,'\\`')}\`)">
       <div class="cat-title">${escHtml(c.title)}</div>
       <div class="cat-count">${c.clues_count} clue${c.clues_count !== 1 ? 's' : ''}</div>
     </div>
   `).join('');
 }
 
-function filterCategories() {
-  renderCategories(state.categories);
+function filterCategories() { renderCategories(); }
+
+async function tryLoadLiveCategories() {
+  try {
+    const data = await apiFetch('/categories?count=100&offset=0');
+    const fresh = data.filter(c => c.clues_count > 0 && !state.categories.find(e => e.id === c.id));
+    if (fresh.length > 0) {
+      state.apiOffset = 100;
+      state.apiLoaded = true;
+      state.categories.push(...fresh);
+      renderCategories();
+      document.getElementById('loadMoreWrap').style.display = 'block';
+      document.getElementById('sourceBadge').className = 'source-badge badge-live';
+      document.getElementById('sourceBadge').textContent = `${state.categories.length} categories loaded (live + bundled)`;
+    }
+  } catch (e) {
+    document.getElementById('sourceBadge').className = 'source-badge badge-bundled';
+    document.getElementById('sourceBadge').textContent = '20 bundled categories (offline mode)';
+  }
 }
 
-// ── DRILL ────────────────────────────────────────────────────────────────────
+async function loadMoreFromAPI() {
+  const btn = document.querySelector('.load-more-btn');
+  btn.textContent = 'Loading…';
+  btn.disabled = true;
+  try {
+    const data = await apiFetch(`/categories?count=100&offset=${state.apiOffset}`);
+    const fresh = data.filter(c => c.clues_count > 0 && !state.categories.find(e => e.id === c.id));
+    state.apiOffset += 100;
+    state.categories.push(...fresh);
+    renderCategories();
+    document.getElementById('sourceBadge').textContent = `${state.categories.length} categories loaded`;
+    if (data.length < 100) document.getElementById('loadMoreWrap').style.display = 'none';
+  } catch (e) {
+    btn.textContent = 'Failed to load — retry?';
+  } finally {
+    btn.textContent = 'Load more from live API…';
+    btn.disabled = false;
+  }
+}
+
+// ── DRILL ─────────────────────────────────────────────────────────────────────
 
 async function startCategoryDrill(categoryId, categoryTitle) {
   state.lastCategoryId = categoryId;
   state.isRandom = false;
   state.categoryName = categoryTitle;
   showScreen('drillScreen');
-
   document.getElementById('drillCategoryName').textContent = categoryTitle;
-  document.getElementById('cardContainer').style.display = 'none';
+  document.getElementById('cardContainer').style.visibility = 'hidden';
   document.getElementById('actionBtns').classList.remove('visible');
-  document.getElementById('categoriesContainer').innerHTML = '';
 
-  const drillContent = document.getElementById('drillScreen');
-  const loadingEl = document.createElement('div');
-  loadingEl.className = 'spinner';
-  loadingEl.id = 'drillSpinner';
-  drillContent.appendChild(loadingEl);
+  let spinner = document.createElement('div');
+  spinner.className = 'spinner';
+  spinner.id = 'drillSpinner';
+  document.getElementById('drillScreen').appendChild(spinner);
 
   try {
-    const data = await apiFetch(`/clues?category=${categoryId}`);
-    const valid = data.filter(c => c.question && c.answer && c.question.trim() && c.answer.trim() && c.question !== '=' && c.answer !== '=');
-    if (valid.length === 0) throw new Error('No valid clues');
-    const shuffled = shuffleArray(valid);
-    initDrill(shuffled);
+    let clues;
+    // Use bundled data for bundled categories
+    if (String(categoryId).startsWith('b')) {
+      const cat = BUNDLED.find(c => c.id === categoryId);
+      clues = cat ? cat.clues : [];
+    } else {
+      const data = await apiFetch(`/clues?category=${categoryId}`);
+      clues = data.filter(c => c.question && c.answer && c.question.trim() && c.answer.trim() && c.question !== '=' && c.answer !== '=');
+    }
+    if (clues.length === 0) throw new Error('No valid clues');
+    document.getElementById('drillSpinner')?.remove();
+    document.getElementById('cardContainer').style.visibility = 'visible';
+    initDrill(shuffleArray(clues));
   } catch (e) {
     document.getElementById('drillSpinner')?.remove();
-    document.getElementById('cardContainer').style.display = 'block';
-    document.getElementById('cardFront').innerHTML = `<div class="card-clue" style="color:#ff8080">Failed to load clues.<br><small>Try another category.</small></div>`;
+    document.getElementById('cardContainer').style.visibility = 'visible';
+    document.getElementById('cardClue').textContent = 'Failed to load clues. Try another category.';
+    document.getElementById('cardValue').textContent = '';
   }
 }
 
@@ -666,64 +711,62 @@ async function startRandomDrill() {
   state.categoryName = 'Random Clues';
   showScreen('drillScreen');
   document.getElementById('drillCategoryName').textContent = 'Random Clues';
-  document.getElementById('cardContainer').style.display = 'none';
+  document.getElementById('cardContainer').style.visibility = 'hidden';
   document.getElementById('actionBtns').classList.remove('visible');
 
-  const spinner = document.createElement('div');
+  let spinner = document.createElement('div');
   spinner.className = 'spinner';
   spinner.id = 'drillSpinner';
   document.getElementById('drillScreen').appendChild(spinner);
 
+  let clues = null;
   try {
     const data = await apiFetch('/random?count=20');
-    const valid = data.filter(c => c.question && c.answer && c.question.trim() && c.answer.trim() && c.question !== '=' && c.answer !== '=');
-    if (valid.length === 0) throw new Error('No valid clues');
-    initDrill(valid);
-  } catch (e) {
-    document.getElementById('drillSpinner')?.remove();
-    document.getElementById('cardContainer').style.display = 'block';
-    document.getElementById('cardFront').innerHTML = `<div class="card-clue" style="color:#ff8080">Failed to load random clues.<br><small>Check your connection.</small></div>`;
+    clues = data.filter(c => c.question && c.answer && c.question.trim() && c.answer.trim() && c.question !== '=' && c.answer !== '=');
+  } catch (e) { /* fall through to bundled */ }
+
+  if (!clues || clues.length < 5) {
+    // Fall back to random sample from bundled data
+    const all = BUNDLED.flatMap(c => c.clues);
+    clues = shuffleArray(all).slice(0, 20);
   }
+
+  document.getElementById('drillSpinner')?.remove();
+  document.getElementById('cardContainer').style.visibility = 'visible';
+  initDrill(clues);
 }
 
 function initDrill(clues) {
-  document.getElementById('drillSpinner')?.remove();
   state.clues = clues;
   state.currentIndex = 0;
   state.correct = 0;
   state.incorrect = 0;
   state.flipped = false;
-
-  document.getElementById('cardContainer').style.display = 'block';
   updateScoreBar();
   showCard(0);
 }
 
 function retryDrill() {
-  if (state.isRandom) {
-    startRandomDrill();
-  } else {
-    startCategoryDrill(state.lastCategoryId, state.categoryName);
-  }
+  if (state.isRandom) startRandomDrill();
+  else startCategoryDrill(state.lastCategoryId, state.categoryName);
 }
 
-// ── CARD ─────────────────────────────────────────────────────────────────────
+// ── CARD ──────────────────────────────────────────────────────────────────────
 
 function showCard(index) {
   const clue = state.clues[index];
   state.flipped = false;
-
   document.getElementById('cardInner').classList.remove('flipped');
   document.getElementById('actionBtns').classList.remove('visible');
 
-  const val = clue.value ? `$${clue.value}` : 'FINAL';
-  document.getElementById('cardValue').textContent = val;
-  document.getElementById('cardClue').textContent = clue.answer;  // Jeopardy: clue = "answer" field
-  document.getElementById('cardAnswer').textContent = clue.question; // correct response = "question" field
+  document.getElementById('cardValue').textContent = clue.value ? `$${clue.value}` : 'FINAL';
+  document.getElementById('cardClue').textContent = clue.answer;
+  document.getElementById('cardAnswer').textContent = clue.question;
 
   const total = state.clues.length;
   document.getElementById('drillProgress').textContent = `${index + 1} / ${total}`;
-  document.getElementById('progressFill').style.width = `${((index) / total) * 100}%`;
+  document.getElementById('progressFill').style.width = `${(index / total) * 100}%`;
+  updateScoreBar();
 }
 
 function flipCard() {
@@ -735,47 +778,41 @@ function flipCard() {
 
 function markAnswer(wasCorrect) {
   if (wasCorrect) state.correct++; else state.incorrect++;
-  updateScoreBar();
-
   const next = state.currentIndex + 1;
   if (next >= state.clues.length) {
-    setTimeout(showSummary, 400);
+    document.getElementById('progressFill').style.width = '100%';
+    setTimeout(showSummary, 350);
   } else {
     state.currentIndex = next;
     showCard(next);
-    document.getElementById('progressFill').style.width = `${(next / state.clues.length) * 100}%`;
   }
 }
 
 function updateScoreBar() {
-  const remaining = state.clues.length - state.currentIndex - (state.flipped ? 1 : 0);
+  const done = state.correct + state.incorrect;
+  const left = state.clues.length - done;
   document.getElementById('scoreCorrect').textContent = `✓ ${state.correct}`;
   document.getElementById('scoreIncorrect').textContent = `✗ ${state.incorrect}`;
-  document.getElementById('scoreRemaining').textContent = `◼ ${Math.max(0, state.clues.length - state.correct - state.incorrect)} left`;
+  document.getElementById('scoreRemaining').textContent = `${left} left`;
 }
 
-// ── SUMMARY ──────────────────────────────────────────────────────────────────
+// ── SUMMARY ───────────────────────────────────────────────────────────────────
 
 function showSummary() {
   const total = state.clues.length;
   const pct = total > 0 ? Math.round((state.correct / total) * 100) : 0;
-
   document.getElementById('summaryCategory').textContent = state.categoryName;
   document.getElementById('summaryPercent').textContent = `${pct}%`;
-  document.getElementById('summaryLabel').textContent = scoreLabel(pct);
+  document.getElementById('summaryLabel').textContent =
+    pct === 100 ? "Perfect — Alex would be proud!" :
+    pct >= 80  ? "Excellent — you're ready for the show!" :
+    pct >= 60  ? "Good work — keep studying!" :
+    pct >= 40  ? "Getting there — practice makes perfect." :
+                 "Tough category — try again!";
   document.getElementById('summaryCorrect').textContent = state.correct;
   document.getElementById('summaryIncorrect').textContent = state.incorrect;
   document.getElementById('summaryTotal').textContent = total;
-
   showScreen('summaryScreen');
-}
-
-function scoreLabel(pct) {
-  if (pct === 100) return 'Perfect score — Alex would be proud!';
-  if (pct >= 80) return 'Excellent — you\'re ready for the show!';
-  if (pct >= 60) return 'Good work — keep studying!';
-  if (pct >= 40) return 'Getting there — practice makes perfect.';
-  return 'Tough category — try again!';
 }
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
@@ -790,11 +827,13 @@ function shuffleArray(arr) {
 }
 
 function escHtml(str) {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
-loadCategories(true);
+
+renderCategories();           // show bundled immediately
+tryLoadLiveCategories();      // then try to add live API data in background
 </script>
 </body>
 </html>
