@@ -543,8 +543,8 @@ async function startCategoryDrill(categoryId, categoryTitle) {
 
   try {
     let clues;
-    // Use bundled data for bundled categories
-    if (String(categoryId).startsWith('b')) {
+    // Use local data for any embedded category (ids start with 'b' or 'r')
+    if (/^[br]/.test(String(categoryId))) {
       const cat = BUNDLED.find(c => c.id === categoryId);
       clues = cat ? cat.clues : [];
     } else {
