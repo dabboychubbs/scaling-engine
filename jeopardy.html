@@ -289,6 +289,35 @@
     .btn-incorrect { background: var(--red); color: #fff; }
     .btn-incorrect:hover { background: #dc2626; }
 
+    /* WRONG ANSWERS */
+    .wrong-section { text-align: center; margin-bottom: 1.25rem; display: flex; gap: 0.65rem; justify-content: center; align-items: center; flex-wrap: wrap; }
+    .wrong-drill-btn {
+      background: rgba(239,68,68,0.15);
+      border: 2px solid var(--red);
+      color: var(--white);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .wrong-drill-btn:hover { background: rgba(239,68,68,0.35); }
+    .wrong-drill-btn:active { transform: scale(0.97); }
+    .clear-wrong-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--gray);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .clear-wrong-btn:hover { border-color: var(--red); color: var(--red); }
+
     /* SUMMARY */
     .summary-card {
       background: var(--blue-card);
@@ -342,8 +371,12 @@
     <h2>Pick a category to drill, or try random clues</h2>
     <div id="sourceBadge" class="source-badge badge-bundled">20 bundled categories &bull; loading live data&hellip;</div>
   </div>
-  <div style="text-align:center; margin-bottom:1.25rem;">
+  <div style="text-align:center; margin-bottom:1rem;">
     <button class="random-btn" onclick="startRandomDrill()">&#9733; Random Drill</button>
+  </div>
+  <div id="wrongSection" class="wrong-section" style="display:none;">
+    <button class="wrong-drill-btn" onclick="startWrongAnswersDrill()">&#10007; Review Missed &mdash; <span id="wrongCount">0</span></button>
+    <button class="clear-wrong-btn" onclick="clearWrongAnswers()">Clear list</button>
   </div>
   <div class="divider">browse categories</div>
   <div class="search-box">
@@ -398,6 +431,7 @@
     </div>
     <div class="summary-btns">
       <button class="summary-btn btn-primary" onclick="retryDrill()">&#8635; Try Again</button>
+      <button class="summary-btn btn-secondary" id="summaryReviewBtn" onclick="startWrongAnswersDrill()" style="display:none;">&#10007; Review Missed</button>
       <button class="summary-btn btn-secondary" onclick="goHome()">&#8592; Categories</button>
     </div>
   </div>
@@ -421,7 +455,47 @@ const state = {
   categoryName: '',
   lastCategoryId: null,
   isRandom: false,
+  isReviewMode: false,
 };
+
+// ── WRONG ANSWERS (localStorage) ─────────────────────────────────────────────
+
+function getWrongAnswers() {
+  try { return JSON.parse(localStorage.getItem('jeopardyWrong') || '[]'); }
+  catch { return []; }
+}
+
+function saveWrongAnswers(list) {
+  localStorage.setItem('jeopardyWrong', JSON.stringify(list));
+}
+
+function addWrongAnswer(clue) {
+  const list = getWrongAnswers();
+  if (!list.find(c => c.id === clue.id)) {
+    list.push({ id: clue.id, answer: clue.answer, question: clue.question, value: clue.value, category: state.categoryName });
+    saveWrongAnswers(list);
+  }
+  updateWrongBadge();
+}
+
+function removeWrongAnswer(id) {
+  saveWrongAnswers(getWrongAnswers().filter(c => c.id !== id));
+  updateWrongBadge();
+}
+
+function clearWrongAnswers() {
+  if (!confirm(`Clear all ${getWrongAnswers().length} missed questions?`)) return;
+  localStorage.removeItem('jeopardyWrong');
+  updateWrongBadge();
+}
+
+function updateWrongBadge() {
+  const count = getWrongAnswers().length;
+  const section = document.getElementById('wrongSection');
+  const countEl = document.getElementById('wrongCount');
+  if (countEl) countEl.textContent = count;
+  if (section) section.style.display = count > 0 ? 'flex' : 'none';
+}
 
 // ── SCREENS ───────────────────────────────────────────────────────────────────
 
@@ -432,7 +506,7 @@ function showScreen(id) {
   window.scrollTo(0, 0);
 }
 
-function goHome() { showScreen('homeScreen'); }
+function goHome() { showScreen('homeScreen'); updateWrongBadge(); }
 
 // ── API ───────────────────────────────────────────────────────────────────────
 
@@ -593,14 +667,27 @@ async function startRandomDrill() {
   initDrill(clues);
 }
 
-function initDrill(clues) {
+function initDrill(clues, reviewMode = false) {
   state.clues = clues;
   state.currentIndex = 0;
   state.correct = 0;
   state.incorrect = 0;
   state.flipped = false;
+  state.isReviewMode = reviewMode;
   updateScoreBar();
   showCard(0);
+}
+
+function startWrongAnswersDrill() {
+  const wrongs = getWrongAnswers();
+  if (wrongs.length === 0) { alert('No missed questions yet!'); return; }
+  state.isRandom = false;
+  state.categoryName = 'Missed Questions';
+  state.lastCategoryId = null;
+  showScreen('drillScreen');
+  document.getElementById('drillCategoryName').textContent = 'Missed Questions';
+  document.getElementById('cardContainer').style.visibility = 'visible';
+  initDrill(shuffleArray(wrongs), true);
 }
 
 function retryDrill() {
@@ -641,7 +728,14 @@ function flipCard() {
 }
 
 function markAnswer(wasCorrect) {
-  if (wasCorrect) state.correct++; else state.incorrect++;
+  const clue = state.clues[state.currentIndex];
+  if (wasCorrect) {
+    state.correct++;
+    if (state.isReviewMode) removeWrongAnswer(clue.id);
+  } else {
+    state.incorrect++;
+    addWrongAnswer(clue);
+  }
   const next = state.currentIndex + 1;
   if (next >= state.clues.length) {
     document.getElementById('progressFill').style.width = '100%';
@@ -676,7 +770,10 @@ function showSummary() {
   document.getElementById('summaryCorrect').textContent = state.correct;
   document.getElementById('summaryIncorrect').textContent = state.incorrect;
   document.getElementById('summaryTotal').textContent = total;
+  const reviewBtn = document.getElementById('summaryReviewBtn');
+  reviewBtn.style.display = getWrongAnswers().length > 0 ? 'inline-block' : 'none';
   showScreen('summaryScreen');
+  updateWrongBadge();
 }
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
@@ -698,6 +795,7 @@ function escHtml(str) {
 
 renderCategories();           // show bundled immediately
 tryLoadLiveCategories();      // then try to add live API data in background
+updateWrongBadge();           // show missed-questions button if any saved
 </script>
 </body>
 </html>
