@@ -166,7 +166,7 @@
       background: rgba(34,197,94,0.08);
     }
     .category-card.done .cat-title { color: var(--green); }
-    .category-card.done .cat-count::before { content: '✓ '; color: var(--green); }
+    .cat-done-badge { color: var(--green); font-size: 0.72rem; margin-top: 0.2rem; }
 
     .load-more-btn {
       display: block;
@@ -495,15 +495,15 @@ function clearWrongAnswers() {
   updateWrongBadge();
 }
 
-function getDoneCategories() {
-  try { return new Set(JSON.parse(localStorage.getItem('jeopardyDone') || '[]')); }
-  catch { return new Set(); }
+function getDoneCounts() {
+  try { return JSON.parse(localStorage.getItem('jeopardyDoneCounts') || '{}'); }
+  catch { return {}; }
 }
 
 function markCategoryDone(id) {
-  const done = getDoneCategories();
-  done.add(String(id));
-  localStorage.setItem('jeopardyDone', JSON.stringify([...done]));
+  const counts = getDoneCounts();
+  counts[String(id)] = (counts[String(id)] || 0) + 1;
+  localStorage.setItem('jeopardyDoneCounts', JSON.stringify(counts));
 }
 
 function updateWrongBadge() {
@@ -567,13 +567,15 @@ function renderCategories() {
     container.innerHTML = '<div class="status-msg">No matching categories.</div>';
     return;
   }
-  const done = getDoneCategories();
+  const counts = getDoneCounts();
   container.innerHTML = filtered.map(c => {
-    const isDone = done.has(String(c.id));
+    const n = counts[String(c.id)] || 0;
+    const badge = n > 0 ? `<div class="cat-done-badge">&#10003; done ${n}&times;</div>` : '';
     return `
-    <div class="category-card${isDone ? ' done' : ''}" onclick="startCategoryDrill('${c.id}', \`${c.title.replace(/`/g,'\\`')}\`)">
+    <div class="category-card${n > 0 ? ' done' : ''}" onclick="startCategoryDrill('${c.id}', \`${c.title.replace(/`/g,'\\`')}\`)">
       <div class="cat-title">${escHtml(c.title)}</div>
       <div class="cat-count">${c.clues_count} clue${c.clues_count !== 1 ? 's' : ''}</div>
+      ${badge}
     </div>`;
   }).join('');
 }
