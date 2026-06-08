@@ -613,9 +613,16 @@ function retryDrill() {
 function showCard(index) {
   const clue = state.clues[index];
   state.flipped = false;
-  document.getElementById('cardInner').classList.remove('flipped');
-  document.getElementById('actionBtns').classList.remove('visible');
 
+  // Snap back to front instantly (no animation) so the old answer
+  // doesn't bleed through while the card rotates back
+  const inner = document.getElementById('cardInner');
+  inner.style.transition = 'none';
+  inner.classList.remove('flipped');
+  inner.getBoundingClientRect(); // force reflow before re-enabling transition
+  inner.style.transition = '';
+
+  document.getElementById('actionBtns').classList.remove('visible');
   document.getElementById('cardValue').textContent = clue.value ? `$${clue.value}` : 'FINAL';
   document.getElementById('cardClue').textContent = clue.answer;
   document.getElementById('cardAnswer').textContent = clue.question;
