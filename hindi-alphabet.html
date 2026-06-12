@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Hindi Alphabet — हिन्दी वर्णमाला</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --surface2: #22222e;
+      --border: #2e2e3e;
+      --accent: #f59e0b;
+      --accent-dim: #92610a;
+      --text: #e8e8f0;
+      --text-muted: #888898;
+      --success: #4caf84;
+      --danger: #e05c6a;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button { font-family: inherit; cursor: pointer; }
+
+    #app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 20px 20px 12px;
+    }
+    .app-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .app-title span { color: var(--accent); }
+    .app-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── Tabs ── */
+    nav {
+      display: flex;
+      gap: 8px;
+      padding: 10px 20px;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 5;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #1a1208;
+    }
+
+    main { flex: 1; padding: 12px 20px 40px; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Learn ── */
+    .progress-bar-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 8px;
+      background: var(--surface2);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .pill-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .pill {
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .pill.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .group-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin: 18px 0 8px;
+    }
+    .group-title:first-child { margin-top: 4px; }
+
+    .letter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+      gap: 8px;
+    }
+    .letter-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 4px 8px;
+      text-align: center;
+      color: var(--text);
+      position: relative;
+    }
+    .letter-card .dev { font-size: 28px; line-height: 1.3; }
+    .letter-card .rom { font-size: 11px; color: var(--text-muted); }
+    .letter-card.learned { border-color: var(--success); }
+    .letter-card.learned::after {
+      content: "✓";
+      position: absolute;
+      top: 4px;
+      right: 7px;
+      font-size: 10px;
+      color: var(--success);
+    }
+
+    /* ── Detail modal ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 20;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 24px 22px 32px;
+      width: 100%;
+      max-width: 560px;
+      text-align: center;
+    }
+    .modal .big-dev { font-size: 88px; line-height: 1.2; }
+    .modal .modal-rom { font-size: 20px; color: var(--accent); font-weight: 700; }
+    .modal .hint { font-size: 14px; color: var(--text-muted); margin-top: 6px; }
+    .modal .example {
+      margin-top: 16px;
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-size: 15px;
+    }
+    .modal .example .word-dev { font-size: 24px; }
+    .modal .example .word-meta { color: var(--text-muted); font-size: 13px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+    .btn {
+      flex: 1;
+      padding: 13px 0;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #1a1208; }
+    .btn.learned-on { border-color: var(--success); color: var(--success); }
+
+    /* ── Flashcards ── */
+    .flash-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 14px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .flash-card .big-dev { font-size: 96px; line-height: 1.2; }
+    .flash-card .tap-hint { font-size: 13px; color: var(--text-muted); }
+    .flash-back .rom-big { font-size: 30px; color: var(--accent); font-weight: 700; }
+    .flash-actions { display: flex; gap: 10px; }
+    .btn.again { border-color: var(--danger); color: var(--danger); background: var(--surface); }
+    .btn.got { border-color: var(--success); color: var(--success); background: var(--surface); }
+    .flash-meta {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 60px 20px;
+      font-size: 15px;
+    }
+
+    /* ── Quiz ── */
+    .quiz-q {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .quiz-q .prompt-label { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+    .quiz-q .prompt-main { font-size: 64px; line-height: 1.25; }
+    .quiz-q .prompt-main.small { font-size: 30px; color: var(--accent); font-weight: 700; }
+    .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .quiz-opt {
+      padding: 18px 0;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 26px;
+    }
+    .quiz-opt.small { font-size: 17px; font-weight: 600; }
+    .quiz-opt.correct { border-color: var(--success); background: rgba(76,175,132,0.15); }
+    .quiz-opt.wrong { border-color: var(--danger); background: rgba(224,92,106,0.15); }
+    .quiz-opt:disabled { cursor: default; }
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .quiz-result {
+      text-align: center;
+      padding: 50px 20px;
+    }
+    .quiz-result .score { font-size: 56px; font-weight: 700; color: var(--accent); }
+    .quiz-result .verdict { font-size: 16px; color: var(--text-muted); margin: 8px 0 24px; }
+    .speak-btn {
+      margin-top: 10px;
+      padding: 9px 20px;
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="app-title">Hindi <span>वर्णमाला</span></div>
+    <div class="app-subtitle">Learn the Devanagari alphabet</div>
+  </header>
+
+  <nav>
+    <button class="tab-btn active" data-tab="learn">Learn</button>
+    <button class="tab-btn" data-tab="flash">Flashcards</button>
+    <button class="tab-btn" data-tab="quiz">Quiz</button>
+  </nav>
+
+  <main>
+    <!-- Learn -->
+    <section id="screen-learn" class="screen active">
+      <div class="progress-bar-wrap">
+        <div class="progress-label">
+          <span>Letters learned</span>
+          <span id="progress-count">0 / 0</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      </div>
+      <div class="pill-row" id="learn-filter">
+        <button class="pill active" data-filter="all">All</button>
+        <button class="pill" data-filter="vowel">Vowels · स्वर</button>
+        <button class="pill" data-filter="consonant">Consonants · व्यंजन</button>
+      </div>
+      <div id="letter-sections"></div>
+    </section>
+
+    <!-- Flashcards -->
+    <section id="screen-flash" class="screen">
+      <div class="pill-row" id="flash-filter">
+        <button class="pill active" data-deck="all">All</button>
+        <button class="pill" data-deck="vowel">Vowels</button>
+        <button class="pill" data-deck="consonant">Consonants</button>
+      </div>
+      <div class="flash-meta" id="flash-meta"></div>
+      <div id="flash-area"></div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="screen-quiz" class="screen">
+      <div id="quiz-area"></div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script>
+"use strict";
+
+/* ── Alphabet data ── */
+const LETTERS = [
+  // Vowels (स्वर)
+  { d: "अ", r: "a",  type: "vowel", group: "Vowels · स्वर", hint: "like 'u' in cup", word: "अनार", wordR: "anaar", meaning: "pomegranate" },
+  { d: "आ", r: "aa", type: "vowel", group: "Vowels · स्वर", hint: "like 'a' in father", word: "आम", wordR: "aam", meaning: "mango" },
+  { d: "इ", r: "i",  type: "vowel", group: "Vowels · स्वर", hint: "like 'i' in sit", word: "इमली", wordR: "imli", meaning: "tamarind" },
+  { d: "ई", r: "ee", type: "vowel", group: "Vowels · स्वर", hint: "like 'ee' in see", word: "ईख", wordR: "eekh", meaning: "sugarcane" },
+  { d: "उ", r: "u",  type: "vowel", group: "Vowels · स्वर", hint: "like 'u' in put", word: "उल्लू", wordR: "ulloo", meaning: "owl" },
+  { d: "ऊ", r: "oo", type: "vowel", group: "Vowels · स्वर", hint: "like 'oo' in moon", word: "ऊन", wordR: "oon", meaning: "wool" },
+  { d: "ऋ", r: "ri", type: "vowel", group: "Vowels · स्वर", hint: "like 'ri' in trip", word: "ऋषि", wordR: "rishi", meaning: "sage" },
+  { d: "ए", r: "e",  type: "vowel", group: "Vowels · स्वर", hint: "like 'a' in cake", word: "एक", wordR: "ek", meaning: "one" },
+  { d: "ऐ", r: "ai", type: "vowel", group: "Vowels · स्वर", hint: "like 'a' in mat (wider)", word: "ऐनक", wordR: "ainak", meaning: "spectacles" },
+  { d: "ओ", r: "o",  type: "vowel", group: "Vowels · स्वर", hint: "like 'o' in go", word: "ओखली", wordR: "okhli", meaning: "mortar" },
+  { d: "औ", r: "au", type: "vowel", group: "Vowels · स्वर", hint: "like 'ou' in ought", word: "औरत", wordR: "aurat", meaning: "woman" },
+  { d: "अं", r: "an", type: "vowel", group: "Vowels · स्वर", hint: "nasal 'n' (anusvāra)", word: "अंगूर", wordR: "angoor", meaning: "grapes" },
+  { d: "अः", r: "ah", type: "vowel", group: "Vowels · स्वर", hint: "breathy 'h' (visarga)", word: "प्रातः", wordR: "praatah", meaning: "early morning" },
+
+  // Velar consonants (कवर्ग)
+  { d: "क", r: "ka",  type: "consonant", group: "Velar · कवर्ग", hint: "like 'k' in skip", word: "कमल", wordR: "kamal", meaning: "lotus" },
+  { d: "ख", r: "kha", type: "consonant", group: "Velar · कवर्ग", hint: "'k' with a puff of air", word: "खरगोश", wordR: "khargosh", meaning: "rabbit" },
+  { d: "ग", r: "ga",  type: "consonant", group: "Velar · कवर्ग", hint: "like 'g' in go", word: "गमला", wordR: "gamla", meaning: "flower pot" },
+  { d: "घ", r: "gha", type: "consonant", group: "Velar · कवर्ग", hint: "'g' with a puff of air", word: "घर", wordR: "ghar", meaning: "house" },
+  { d: "ङ", r: "nga", type: "consonant", group: "Velar · कवर्ग", hint: "like 'ng' in sing", word: "रंग", wordR: "rang", meaning: "color (appears inside words)" },
+
+  // Palatal consonants (चवर्ग)
+  { d: "च", r: "cha",  type: "consonant", group: "Palatal · चवर्ग", hint: "like 'ch' in chair (soft)", word: "चम्मच", wordR: "chammach", meaning: "spoon" },
+  { d: "छ", r: "chha", type: "consonant", group: "Palatal · चवर्ग", hint: "'ch' with a puff of air", word: "छाता", wordR: "chhaata", meaning: "umbrella" },
+  { d: "ज", r: "ja",   type: "consonant", group: "Palatal · चवर्ग", hint: "like 'j' in jug", word: "जहाज", wordR: "jahaaz", meaning: "ship" },
+  { d: "झ", r: "jha",  type: "consonant", group: "Palatal · चवर्ग", hint: "'j' with a puff of air", word: "झंडा", wordR: "jhanda", meaning: "flag" },
+  { d: "ञ", r: "nya",  type: "consonant", group: "Palatal · चवर्ग", hint: "like 'ny' in canyon", word: "अञ्जलि", wordR: "anjali", meaning: "cupped hands (appears in conjuncts)" },
+
+  // Retroflex consonants (टवर्ग)
+  { d: "ट", r: "ṭa",  type: "consonant", group: "Retroflex · टवर्ग", hint: "hard 't', tongue curled back", word: "टमाटर", wordR: "tamaatar", meaning: "tomato" },
+  { d: "ठ", r: "ṭha", type: "consonant", group: "Retroflex · टवर्ग", hint: "hard 't' with a puff of air", word: "ठंडा", wordR: "thanda", meaning: "cold" },
+  { d: "ड", r: "ḍa",  type: "consonant", group: "Retroflex · टवर्ग", hint: "hard 'd', tongue curled back", word: "डमरू", wordR: "damroo", meaning: "small drum" },
+  { d: "ढ", r: "ḍha", type: "consonant", group: "Retroflex · टवर्ग", hint: "hard 'd' with a puff of air", word: "ढोल", wordR: "dhol", meaning: "drum" },
+  { d: "ण", r: "ṇa",  type: "consonant", group: "Retroflex · टवर्ग", hint: "'n', tongue curled back", word: "बाण", wordR: "baan", meaning: "arrow (appears inside words)" },
+
+  // Dental consonants (तवर्ग)
+  { d: "त", r: "ta",  type: "consonant", group: "Dental · तवर्ग", hint: "soft 't', tongue on teeth", word: "तरबूज", wordR: "tarbooz", meaning: "watermelon" },
+  { d: "थ", r: "tha", type: "consonant", group: "Dental · तवर्ग", hint: "soft 't' with a puff of air", word: "थाली", wordR: "thaali", meaning: "plate" },
+  { d: "द", r: "da",  type: "consonant", group: "Dental · तवर्ग", hint: "soft 'd', like 'th' in this", word: "दरवाज़ा", wordR: "darwaaza", meaning: "door" },
+  { d: "ध", r: "dha", type: "consonant", group: "Dental · तवर्ग", hint: "soft 'd' with a puff of air", word: "धनुष", wordR: "dhanush", meaning: "bow" },
+  { d: "न", r: "na",  type: "consonant", group: "Dental · तवर्ग", hint: "like 'n' in nut", word: "नल", wordR: "nal", meaning: "tap" },
+
+  // Labial consonants (पवर्ग)
+  { d: "प", r: "pa",  type: "consonant", group: "Labial · पवर्ग", hint: "like 'p' in spin", word: "पतंग", wordR: "patang", meaning: "kite" },
+  { d: "फ", r: "pha", type: "consonant", group: "Labial · पवर्ग", hint: "'p' with a puff of air", word: "फल", wordR: "phal", meaning: "fruit" },
+  { d: "ब", r: "ba",  type: "consonant", group: "Labial · पवर्ग", hint: "like 'b' in bat", word: "बकरी", wordR: "bakri", meaning: "goat" },
+  { d: "भ", r: "bha", type: "consonant", group: "Labial · पवर्ग", hint: "'b' with a puff of air", word: "भालू", wordR: "bhaaloo", meaning: "bear" },
+  { d: "म", r: "ma",  type: "consonant", group: "Labial · पवर्ग", hint: "like 'm' in mat", word: "मछली", wordR: "machhli", meaning: "fish" },
+
+  // Semivowels & fricatives
+  { d: "य", r: "ya", type: "consonant", group: "Semivowels & fricatives", hint: "like 'y' in yes", word: "यज्ञ", wordR: "yagya", meaning: "ritual" },
+  { d: "र", r: "ra", type: "consonant", group: "Semivowels & fricatives", hint: "rolled 'r'", word: "रथ", wordR: "rath", meaning: "chariot" },
+  { d: "ल", r: "la", type: "consonant", group: "Semivowels & fricatives", hint: "like 'l' in love", word: "लट्टू", wordR: "lattoo", meaning: "spinning top" },
+  { d: "व", r: "va", type: "consonant", group: "Semivowels & fricatives", hint: "between 'v' and 'w'", word: "वन", wordR: "van", meaning: "forest" },
+  { d: "श", r: "sha", type: "consonant", group: "Semivowels & fricatives", hint: "like 'sh' in ship", word: "शेर", wordR: "sher", meaning: "lion" },
+  { d: "ष", r: "ṣha", type: "consonant", group: "Semivowels & fricatives", hint: "'sh', tongue curled back", word: "षट्कोण", wordR: "shatkon", meaning: "hexagon" },
+  { d: "स", r: "sa", type: "consonant", group: "Semivowels & fricatives", hint: "like 's' in sun", word: "सेब", wordR: "seb", meaning: "apple" },
+  { d: "ह", r: "ha", type: "consonant", group: "Semivowels & fricatives", hint: "like 'h' in hat", word: "हाथी", wordR: "haathi", meaning: "elephant" },
+
+  // Conjuncts (संयुक्त व्यंजन)
+  { d: "क्ष", r: "ksha", type: "consonant", group: "Conjuncts · संयुक्त", hint: "k + sha together", word: "क्षत्रिय", wordR: "kshatriya", meaning: "warrior" },
+  { d: "त्र", r: "tra",  type: "consonant", group: "Conjuncts · संयुक्त", hint: "t + ra together", word: "त्रिशूल", wordR: "trishool", meaning: "trident" },
+  { d: "ज्ञ", r: "gya",  type: "consonant", group: "Conjuncts · संयुक्त", hint: "pronounced 'gya' in Hindi", word: "ज्ञान", wordR: "gyaan", meaning: "knowledge" },
+];
+
+/* ── State ── */
+const STORE_KEY = "hindi-alphabet-v1";
+let state = { learned: {}, bestScore: null };
+try {
+  const saved = JSON.parse(localStorage.getItem(STORE_KEY));
+  if (saved && typeof saved === "object") state = Object.assign(state, saved);
+} catch (e) { /* corrupted storage — start fresh */ }
+function save() { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+
+/* ── Speech ── */
+let hindiVoice = null;
+function pickVoice() {
+  const voices = speechSynthesis.getVoices();
+  hindiVoice = voices.find(v => v.lang === "hi-IN") || voices.find(v => v.lang.startsWith("hi")) || null;
+}
+if ("speechSynthesis" in window) {
+  pickVoice();
+  speechSynthesis.onvoiceschanged = pickVoice;
+}
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "hi-IN";
+  if (hindiVoice) u.voice = hindiVoice;
+  u.rate = 0.8;
+  speechSynthesis.speak(u);
+}
+
+/* ── Tabs ── */
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b === btn));
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById("screen-" + btn.dataset.tab).classList.add("active");
+    if (btn.dataset.tab === "flash" && !flashQueue.length) startFlash();
+    if (btn.dataset.tab === "quiz" && !quizActive) renderQuizStart();
+  });
+});
+
+/* ── Learn screen ── */
+let learnFilter = "all";
+
+function renderLearn() {
+  const learnedCount = LETTERS.filter(l => state.learned[l.d]).length;
+  document.getElementById("progress-count").textContent = learnedCount + " / " + LETTERS.length;
+  document.getElementById("progress-fill").style.width = (learnedCount / LETTERS.length * 100) + "%";
+
+  const container = document.getElementById("letter-sections");
+  container.innerHTML = "";
+  const visible = LETTERS.filter(l => learnFilter === "all" || l.type === learnFilter);
+  const groups = [...new Set(visible.map(l => l.group))];
+  for (const g of groups) {
+    const title = document.createElement("div");
+    title.className = "group-title";
+    title.textContent = g;
+    container.appendChild(title);
+    const grid = document.createElement("div");
+    grid.className = "letter-grid";
+    for (const l of visible.filter(x => x.group === g)) {
+      const card = document.createElement("button");
+      card.className = "letter-card" + (state.learned[l.d] ? " learned" : "");
+      card.innerHTML = `<div class="dev">${l.d}</div><div class="rom">${l.r}</div>`;
+      card.addEventListener("click", () => openDetail(l));
+      grid.appendChild(card);
+    }
+    container.appendChild(grid);
+  }
+}
+
+document.getElementById("learn-filter").addEventListener("click", e => {
+  const pill = e.target.closest(".pill");
+  if (!pill) return;
+  learnFilter = pill.dataset.filter;
+  document.querySelectorAll("#learn-filter .pill").forEach(p => p.classList.toggle("active", p === pill));
+  renderLearn();
+});
+
+/* ── Detail modal ── */
+const overlay = document.getElementById("modal-overlay");
+function openDetail(l) {
+  const learned = !!state.learned[l.d];
+  document.getElementById("modal-content").innerHTML = `
+    <div class="big-dev">${l.d}</div>
+    <div class="modal-rom">${l.r}</div>
+    <div class="hint">${l.hint}</div>
+    <button class="speak-btn" id="speak-letter">🔊 Hear letter</button>
+    <div class="example">
+      <div class="word-dev">${l.word}</div>
+      <div class="word-meta">${l.wordR} — ${l.meaning}</div>
+      <button class="speak-btn" id="speak-word">🔊 Hear word</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ${learned ? "learned-on" : ""}" id="mark-learned">${learned ? "✓ Learned" : "Mark as learned"}</button>
+      <button class="btn primary" id="close-modal">Close</button>
+    </div>`;
+  document.getElementById("speak-letter").addEventListener("click", () => speak(l.d));
+  document.getElementById("speak-word").addEventListener("click", () => speak(l.word));
+  document.getElementById("mark-learned").addEventListener("click", () => {
+    if (state.learned[l.d]) delete state.learned[l.d]; else state.learned[l.d] = true;
+    save();
+    renderLearn();
+    openDetail(l);
+  });
+  document.getElementById("close-modal").addEventListener("click", closeModal);
+  overlay.classList.add("open");
+  speak(l.d);
+}
+function closeModal() { overlay.classList.remove("open"); }
+overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
+
+/* ── Flashcards ── */
+let flashDeck = "all";
+let flashQueue = [];
+let flashFlipped = false;
+let flashDone = 0;
+let flashTotal = 0;
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function startFlash() {
+  flashQueue = shuffle(LETTERS.filter(l => flashDeck === "all" || l.type === flashDeck).slice());
+  flashTotal = flashQueue.length;
+  flashDone = 0;
+  flashFlipped = false;
+  renderFlash();
+}
+
+function renderFlash() {
+  const area = document.getElementById("flash-area");
+  document.getElementById("flash-meta").textContent =
+    flashQueue.length ? `${flashDone} done · ${flashQueue.length} remaining` : "";
+  if (!flashQueue.length) {
+    area.innerHTML = `<div class="empty-state">🎉 Deck finished!<br><br><button class="btn primary" id="flash-restart" style="max-width:220px">Start again</button></div>`;
+    document.getElementById("flash-restart").addEventListener("click", startFlash);
+    return;
+  }
+  const l = flashQueue[0];
+  if (!flashFlipped) {
+    area.innerHTML = `
+      <button class="flash-card" id="flash-card">
+        <div class="big-dev">${l.d}</div>
+        <div class="tap-hint">Tap to reveal</div>
+      </button>`;
+    document.getElementById("flash-card").addEventListener("click", () => { flashFlipped = true; renderFlash(); });
+  } else {
+    area.innerHTML = `
+      <div class="flash-card flash-back">
+        <div class="big-dev">${l.d}</div>
+        <div class="rom-big">${l.r}</div>
+        <div class="tap-hint">${l.hint}</div>
+        <div class="tap-hint">${l.word} (${l.wordR}) — ${l.meaning}</div>
+        <button class="speak-btn" id="flash-speak">🔊 Hear it</button>
+      </div>
+      <div class="flash-actions">
+        <button class="btn again" id="flash-again">Again</button>
+        <button class="btn got" id="flash-got">Got it ✓</button>
+      </div>`;
+    document.getElementById("flash-speak").addEventListener("click", () => speak(l.d));
+    document.getElementById("flash-again").addEventListener("click", () => {
+      // Re-insert a few cards later so it comes around again soon.
+      const card = flashQueue.shift();
+      flashQueue.splice(Math.min(3, flashQueue.length), 0, card);
+      flashFlipped = false;
+      renderFlash();
+    });
+    document.getElementById("flash-got").addEventListener("click", () => {
+      flashQueue.shift();
+      flashDone++;
+      flashFlipped = false;
+      renderFlash();
+    });
+    speak(l.d);
+  }
+}
+
+document.getElementById("flash-filter").addEventListener("click", e => {
+  const pill = e.target.closest(".pill");
+  if (!pill) return;
+  flashDeck = pill.dataset.deck;
+  document.querySelectorAll("#flash-filter .pill").forEach(p => p.classList.toggle("active", p === pill));
+  startFlash();
+});
+
+/* ── Quiz ── */
+const QUIZ_LEN = 10;
+let quizActive = false;
+let quizQs = [];
+let quizIndex = 0;
+let quizScore = 0;
+
+function renderQuizStart() {
+  quizActive = false;
+  const best = state.bestScore !== null ? `<div class="verdict">Best score: ${state.bestScore} / ${QUIZ_LEN}</div>` : "";
+  document.getElementById("quiz-area").innerHTML = `
+    <div class="quiz-result">
+      <div style="font-size:48px">📝</div>
+      <div class="verdict" style="margin-top:12px">${QUIZ_LEN} questions — match letters to their sounds, both directions.</div>
+      ${best}
+      <button class="btn primary" id="quiz-start" style="max-width:240px">Start quiz</button>
+    </div>`;
+  document.getElementById("quiz-start").addEventListener("click", startQuiz);
+}
+
+function startQuiz() {
+  const pool = shuffle(LETTERS.slice()).slice(0, QUIZ_LEN);
+  quizQs = pool.map(l => {
+    const wrong = shuffle(LETTERS.filter(x => x !== l).slice()).slice(0, 3);
+    return {
+      letter: l,
+      dir: Math.random() < 0.5 ? "d2r" : "r2d", // devanagari→roman or roman→devanagari
+      options: shuffle([l, ...wrong]),
+    };
+  });
+  quizIndex = 0;
+  quizScore = 0;
+  quizActive = true;
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  const q = quizQs[quizIndex];
+  const l = q.letter;
+  const d2r = q.dir === "d2r";
+  const area = document.getElementById("quiz-area");
+  area.innerHTML = `
+    <div class="quiz-meta">
+      <span>Question ${quizIndex + 1} / ${QUIZ_LEN}</span>
+      <span>Score: ${quizScore}</span>
+    </div>
+    <div class="quiz-q">
+      <div class="prompt-label">${d2r ? "Which sound is this letter?" : "Which letter makes this sound?"}</div>
+      <div class="prompt-main ${d2r ? "" : "small"}">${d2r ? l.d : l.r}</div>
+      ${d2r ? `<button class="speak-btn" id="quiz-speak">🔊 Hear it</button>` : ""}
+    </div>
+    <div class="quiz-options">
+      ${q.options.map((o, i) =>
+        `<button class="quiz-opt ${d2r ? "small" : ""}" data-i="${i}">${d2r ? o.r : o.d}</button>`).join("")}
+    </div>`;
+  const speakBtn = document.getElementById("quiz-speak");
+  if (speakBtn) speakBtn.addEventListener("click", () => speak(l.d));
+  area.querySelectorAll(".quiz-opt").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const chosen = q.options[+btn.dataset.i];
+      const correct = chosen === l;
+      if (correct) quizScore++;
+      area.querySelectorAll(".quiz-opt").forEach(b => {
+        b.disabled = true;
+        const opt = q.options[+b.dataset.i];
+        if (opt === l) b.classList.add("correct");
+        else if (b === btn) b.classList.add("wrong");
+      });
+      speak(l.d);
+      setTimeout(() => {
+        quizIndex++;
+        if (quizIndex < quizQs.length) renderQuizQuestion();
+        else renderQuizResult();
+      }, 1100);
+    });
+  });
+}
+
+function renderQuizResult() {
+  quizActive = false;
+  if (state.bestScore === null || quizScore > state.bestScore) {
+    state.bestScore = quizScore;
+    save();
+  }
+  const pct = quizScore / QUIZ_LEN;
+  const verdict = pct === 1 ? "Perfect! शाबाश! 🏆"
+    : pct >= 0.7 ? "Great work! बहुत अच्छे! 🎉"
+    : pct >= 0.4 ? "Good effort — keep practicing!"
+    : "Keep going — review the Learn tab and try again!";
+  document.getElementById("quiz-area").innerHTML = `
+    <div class="quiz-result">
+      <div class="score">${quizScore} / ${QUIZ_LEN}</div>
+      <div class="verdict">${verdict}<br>Best: ${state.bestScore} / ${QUIZ_LEN}</div>
+      <button class="btn primary" id="quiz-again" style="max-width:240px">Play again</button>
+    </div>`;
+  document.getElementById("quiz-again").addEventListener("click", startQuiz);
+}
+
+/* ── Init ── */
+renderLearn();
+</script>
+</body>
+</html>
